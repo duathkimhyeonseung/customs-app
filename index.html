@@ -2999,7 +2999,46 @@ function tile(cls, o, onClick) {
 
   /* ---------- 시작 ---------- */
   try { history.replaceState({ d: 0 }, '', location.pathname + location.search); } catch (e) { }
-  stack.push({ id: 'home', lv: LV }); show(stack[0]);
+  /* ---------- 보던 화면 기억: 홈 화면·다른 앱으로 나갔다가 다시 켜도 그대로 ----------
+     (저사양 기기는 뒤에 둔 앱을 꺼버려서 다시 켜면 첫 화면부터 시작했음) */
+  var STKEY = 'gwanse-view-v1';
+  function saveState() {
+    try {
+      saveTop();
+      var top = stack[stack.length - 1]; if (top && !DATA.maps[top.id]) top.py = page.scrollTop;
+      var st = { stack: JSON.parse(JSON.stringify(stack)) };
+      if (top && top.id === 's-hs') {
+        var fr = page.querySelector('iframe.embed');
+        try { if (fr && fr.contentWindow && fr.contentWindow.hsStack) st.hs = fr.contentWindow.hsStack(); } catch (e) { }
+      }
+      localStorage.setItem(STKEY, JSON.stringify(st));
+    } catch (e) { }
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') saveState(); });
+  window.addEventListener('pagehide', saveState);
+  function restoreState() {
+    var st = null;
+    try { st = JSON.parse(localStorage.getItem(STKEY) || 'null'); } catch (e) { }
+    if (!st || !st.stack || !st.stack.length || st.stack[0].id !== 'home') return false;
+    var ok = st.stack.every(function (e) { return e && typeof e.id === 'string' && (e.id === 'home' || DATA.maps[e.id] || screenInfo(e.id)); });
+    if (!ok || st.stack.length < 2) return false;
+    try {
+      st.stack.forEach(function (e, i) { stack.push(e); if (i) hpush(); });
+      var top = stack[stack.length - 1];
+      show(top);
+      if (top.py) { var py = top.py; requestAnimationFrame(function () { page.scrollTop = py; }); }
+      if (top.id === 's-hs' && st.hs && st.hs.length) {
+        var fr = page.querySelector('iframe.embed'), done = false;
+        var run = function () { if (done) return; try { if (fr.contentWindow && fr.contentWindow.hsGo) { done = true; st.hs.forEach(function (r) { fr.contentWindow.hsGo(r); }); } } catch (e) { } };
+        if (fr) { fr.addEventListener('load', function () { setTimeout(run, 50); }); setTimeout(run, 800); }
+      }
+      return true;
+    } catch (e) {
+      try { localStorage.removeItem(STKEY); } catch (e2) { }
+      stack.length = 0; return false;
+    }
+  }
+  if (!restoreState()) { stack.push({ id: 'home', lv: LV }); show(stack[0]); }
 })();
 </script>
 

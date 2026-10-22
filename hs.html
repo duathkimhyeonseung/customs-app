@@ -464,6 +464,7 @@ function goHome(){
 backBtn.addEventListener('click', goHome);
 window.hsBack = function(){ if (hdPop) { closeHd(); return true; } if (stack.length > 1) { backNow(); return true; } return false; };
 window.hsGo = function(r){ nav(r); };
+window.hsStack = function(){ return stack.slice(1); };
 document.addEventListener('click', function(){ try { if (parent !== window && parent.autoFs) parent.autoFs(); } catch(e){} }, true);
 
 var FS = [14.5, 16, 17.5], FS_NAME = ['보통', '크게', '더 크게'];
