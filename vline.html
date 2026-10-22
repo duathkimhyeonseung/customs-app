@@ -22,7 +22,7 @@ body { background:var(--bg); color:var(--ink); font-family:var(--sans); display:
 .bar button { font:inherit; font-size:13px; padding:4px 10px; border:1px solid var(--rule); border-radius:8px; background:var(--sheet); color:var(--ink); cursor:pointer; }
 #view { flex:1; min-height:0; overflow:auto; position:relative; touch-action:pan-x pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
 #stage { position:relative; padding:14px 18px 40px; width:max-content; }
-#cols { display:grid; grid-template-columns:330px 250px 250px 270px; column-gap:110px; position:relative; z-index:1; }
+#cols { display:grid; grid-template-columns:270px 250px 250px 270px; column-gap:110px; position:relative; z-index:1; }
 .col { position:relative; }
 .col h2 { margin:0 0 10px; font-size:15px; font-weight:700; padding:6px 10px; border-radius:8px; background:var(--band); border-left:4px solid var(--k); color:var(--k); }
 .col.c0 { --k:var(--L); } .col.c1 { --k:var(--D); } .col.c2 { --k:var(--R); } .col.c3 { --k:var(--G); }
@@ -78,11 +78,11 @@ for (let c = 0; c < 4; c++) {
 function lab(n) {
   if (n.col) { const m = n.lab.match(/^(\d+조(?:의\d+)?)\s*\((.*)\)$/); return m ? `<span class="no">${m[1]}</span>${m[2]}` : n.lab; }
   const m = n.lab.match(/^(\d+조)(?:\((.*)\))?(.*)$/);
-  if (n.lv === 1 && n.body) return n.body.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])).replace(/^([①-⑩])\s*/, '<span class="no">$1</span>');
+  if (n.lv === 1) return `<span class="no">${n.lab} 본문</span>`;
   return n.lv === 0 ? `<span class="no">${m[1]}</span>${m[2] || ''}` : `<span class="no">${n.lab}</span>`;
 }
 D.nodes.forEach(n => {
-  const b = document.createElement('button'); b.className = 'n' + (n.col ? '' : ' lv' + n.lv + (n.body ? ' body' : '')); b.type = 'button';
+  const b = document.createElement('button'); b.className = 'n' + (n.col ? '' : ' lv' + n.lv); b.type = 'button';
   b.innerHTML = lab(n); b.onclick = (e) => { e.stopPropagation(); select(n.id); };
   colEl[n.col].appendChild(b); el[n.id] = b;
 });
