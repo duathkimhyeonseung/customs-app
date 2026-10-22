@@ -263,6 +263,7 @@ view.addEventListener("touchstart", (e) => {
   e.preventDefault();
   const m = tmid(e.touches);
   pinch = { d0: tdist(e.touches), z0: z, m0: m, px: (view.scrollLeft + m.x - offL()) / z, py: (view.scrollTop + m.y - offT()) / z, s: 1, m };
+  svg.style.willChange = "transform"; /* 손가락 확대 중에는 그림을 한 장의 이미지처럼 움직여 부드럽게 */
 }, { passive: false });
 view.addEventListener("touchmove", (e) => {
   if (!pinch || e.touches.length !== 2) return;
@@ -271,12 +272,15 @@ view.addEventListener("touchmove", (e) => {
   pinch.s = clampZ(pinch.z0 * (tdist(e.touches) / pinch.d0)) / pinch.z0; pinch.m = m;
   const ox = pinch.px * pinch.z0, oy = pinch.py * pinch.z0;
   const tx = ox + view.scrollLeft * 0 + (m.x - pinch.m0.x) - ox * pinch.s + ox * 0;
-  svg.style.transform = `translate(${ox - ox * pinch.s + (m.x - pinch.m0.x)}px, ${oy - oy * pinch.s + (m.y - pinch.m0.y)}px) scale(${pinch.s})`;
+  /* 한 화면 그리기(프레임)마다 한 번만 반영 */
+  if (!pinch.raf) pinch.raf = requestAnimationFrame(() => { if (!pinch) return; pinch.raf = 0; const q = pinch;
+    svg.style.transform = `translate(${ox - ox * q.s + (q.m.x - q.m0.x)}px, ${oy - oy * q.s + (q.m.y - q.m0.y)}px) scale(${q.s})`; });
 }, { passive: false });
 function endPinch() {
   if (!pinch) return;
   const p = pinch; pinch = null;
-  svg.style.transform = "";
+  if (p.raf) cancelAnimationFrame(p.raf);
+  svg.style.transform = ""; svg.style.willChange = "";
   z = clampZ(p.z0 * p.s); applyZoom(false);
   view.scrollLeft = p.px * z + offL() - p.m.x; view.scrollTop = p.py * z + offT() - p.m.y;
 }
@@ -295,7 +299,7 @@ view.addEventListener("wheel", (e) => {
 let flyAnim = 0;
 function flyTo(cx, cy, z1, ms = 450) {
   cancelAnimationFrame(flyAnim);
-  svg.style.transform = "";
+  svg.style.transform = ""; svg.style.willChange = "transform";
   const W = view.clientWidth, H = view.clientHeight;
   const z0 = z, sl0 = view.scrollLeft, st0 = view.scrollTop, oL = offL(), oT = offT();
   const cx0 = (sl0 + W / 2 - oL) / z0, cy0 = (st0 + H / 2 - oT) / z0;
@@ -307,7 +311,7 @@ function flyTo(cx, cy, z1, ms = 450) {
     const s = zt / z0;
     svg.style.transform = `translate(${W / 2 - oL + sl0 - zt * cxt}px, ${H / 2 - oT + st0 - zt * cyt}px) scale(${s})`;
     if (u < 1) { flyAnim = requestAnimationFrame(step); return; }
-    svg.style.transform = "";
+    svg.style.transform = ""; svg.style.willChange = "";
     z = z1; applyZoom(false);
     view.scrollLeft = cx * z + offL() - W / 2; view.scrollTop = cy * z + offT() - H / 2;
   };
