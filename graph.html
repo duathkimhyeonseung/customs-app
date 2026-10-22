@@ -56,7 +56,7 @@ svg { display: block; }
 .node circle { fill: var(--sheet); stroke-width: 1.6; }
 .node.L circle { stroke: var(--law-l); } .node.D circle { stroke: var(--law-d); } .node.R circle { stroke: var(--law-r); }
 .node.iso circle { stroke-dasharray: 2 2; }
-.node text { font: 11px var(--sans); fill: var(--ink); }
+.node text { font: 11px var(--sans); fill: var(--ink); } svg.lod .node:not(.on) text { display: none; }
 .node .no { font-weight: 600; }
 .node.L .no { fill: var(--law-l); } .node.D .no { fill: var(--law-d); } .node.R .no { fill: var(--law-r); }
 .node { cursor: pointer; }
@@ -241,9 +241,12 @@ try { new ResizeObserver(() => { const nz = Math.min((view.clientWidth - 8) / SI
   document.addEventListener("fullscreenchange", onChange);
   document.addEventListener("webkitfullscreenchange", onChange);
 }
+const LOD_Z = 0.55;
 function applyZoom(keepCenter) {
   const cx = (view.scrollLeft + view.clientWidth / 2) / (svg.clientWidth || 1), cy = (view.scrollTop + view.clientHeight / 2) / (svg.clientHeight || 1);
   svg.setAttribute("width", SIZE * z); svg.setAttribute("height", SIZE * z);
+  /* 멀리서 볼 때(글자가 6px 미만)는 조문 이름을 숨겨 그리는 양을 줄임 — 저사양 기기 대비 */
+  svg.classList.toggle("lod", z < LOD_Z);
   if (keepCenter) { view.scrollLeft = cx * SIZE * z - view.clientWidth / 2; view.scrollTop = cy * SIZE * z - view.clientHeight / 2; }
 }
 applyZoom(false);
