@@ -38,7 +38,7 @@ body { background:var(--bg); color:var(--ink); font-family:var(--sans); display:
 .n .no { font-weight:700; color:var(--k); margin-right:4px; }
 svg#wires { position:absolute; left:0; top:0; z-index:0; pointer-events:none; overflow:visible; }
 path.w { fill:none; stroke-width:1.6; opacity:.55; }
-path.w.d { stroke:var(--p); } path.w.r { stroke:var(--o); } path.w.g { stroke:var(--g); } path.w.c, path.w.a { stroke:var(--g); stroke-dasharray:5 4; }
+path.w.d { stroke:var(--p); } path.w.r { stroke:var(--o); } path.w.g { stroke:var(--g); } path.w.c, path.w.a { stroke:var(--ink); stroke-dasharray:5 4; }
 .hide-d path.w.d, .hide-r path.w.r, .hide-c path.w.c, .hide-c path.w.a, .hide-g path.w.g { display:none; }
 .focus .n { opacity:.25; } .focus .n.on { opacity:1; } .focus .n.me { border-color:var(--sel); box-shadow:0 0 0 2px var(--sel) inset; }
 .focus path.w { opacity:.06; } .focus path.w.on { opacity:1; stroke-width:2.6; }
@@ -55,7 +55,7 @@ path.w.d { stroke:var(--p); } path.w.r { stroke:var(--o); } path.w.g { stroke:va
     <label><input type="checkbox" data-k="d" checked><i style="border-color:var(--p)"></i>대통령령 위임</label>
     <label><input type="checkbox" data-k="r" checked><i style="border-color:var(--o)"></i>재정경제부령 위임</label>
     <label><input type="checkbox" data-k="g" checked><i style="border-color:var(--g)"></i>고시 연결</label>
-    <label><input type="checkbox" data-k="c" checked><i class="c" style="border-color:var(--g)"></i>근거 인용</label>
+    <label><input type="checkbox" data-k="c" checked><i class="c" style="border-color:var(--ink)"></i>근거 인용</label>
   </div>
   <button id="zo" aria-label="축소">−</button><button id="zi" aria-label="확대">＋</button>
 </div>
