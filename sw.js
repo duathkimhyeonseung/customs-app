@@ -1,5 +1,5 @@
 /* 관세사 앱 오프라인 저장 */
-const VER = '20261022145055';
+const VER = '20261022145329';
 const CORE = 'core-' + VER, FONTS = 'fonts-v1';
 const FILES = ['./', './index.html', './graph.html', './graph9.html', './vgraph.html', './vline.html', './hs.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CORE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
