@@ -1,7 +1,7 @@
 /* 관세사 앱 오프라인 저장 */
-const VER = '20261022124217';
+const VER = '20261022130308';
 const CORE = 'core-' + VER, FONTS = 'fonts-v1';
-const FILES = ['./', './index.html', './graph.html', './vgraph.html', './hs.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const FILES = ['./', './index.html', './graph.html', './graph9.html', './vgraph.html', './hs.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CORE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CORE && k !== FONTS).map(k => caches.delete(k)))).then(() => self.clients.claim()));
