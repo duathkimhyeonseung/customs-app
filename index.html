@@ -599,6 +599,46 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .fmini .lab.fpick:hover { text-decoration: underline; text-underline-offset: 3px; }
 .fmini .fcur > .row > .node > .lab { outline: 4px solid var(--pen); outline-offset: 4px; border-radius: 6px; }
 .fmini .rootbox > .lab { cursor: pointer; font-size: 27px; font-weight: 700; padding: 10px 18px; border: 2px solid var(--line); border-radius: 14px 18px 12px 16px; background: var(--marker); white-space: nowrap; margin: 0 4px; }
+
+/* ---------- 스캔본·협정집 보기 ---------- */
+.page.pvpg { overflow: hidden; padding: 0; }
+.pvhost { position: relative; flex: 1 1 auto; min-height: 0; display: flex; }
+.pv { flex: 1 1 auto; overflow: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: #ECEAE4; }
+.pvin { padding: 8px 8px 60px; display: flex; flex-direction: column; align-items: center; gap: 10px; width: max-content; min-width: 100%; box-sizing: border-box; }
+.pvrow { display: flex; gap: 8px; justify-content: center; }
+.pvpg { position: relative; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+.pvpg img { display: block; width: 100%; height: 100%; -webkit-user-select: none; user-select: none; }
+.pvnum { position: absolute; right: 7%; bottom: 3.2%; font: 600 13px/1 var(--font-num, sans-serif); color: #333; }
+.pvz { position: absolute; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 4px; }
+.pvz:active { background: rgba(31,111,178,.16); }
+.pvz.agr { border-bottom: 2px solid rgba(31,111,178,.55); }
+.pvhit { position: absolute; background: rgba(255,214,0,.38); border-radius: 3px; pointer-events: none; animation: pvhit 2.4s ease-out 1 forwards; }
+@keyframes pvhit { 0%, 70% { opacity: 1; } 100% { opacity: .35; } }
+.pvbadge { position: absolute; right: 14px; bottom: 12px; padding: 4px 11px; border-radius: 999px; background: rgba(30,30,30,.72); color: #fff; font: 600 13px/1.4 var(--font-num, sans-serif); pointer-events: none; }
+.qnav.pvq { flex: none; position: static; }
+.agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px; min-height: 0; }
+.agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
+.agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
+.agrsecs { display: grid; grid-template-rows: repeat(6, 1fr); gap: 10px; min-height: 0; }
+.agrsec { border: 2px solid var(--line); border-radius: 14px; background: var(--box); font: inherit; font-size: 19px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.agrbook:active, .agrsec:active { background: var(--marker); }
+.agrtoc { width: min(760px, 100%); background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.15); box-sizing: border-box; }
+.agrtoc h2 { margin: 0 0 8px; font-size: 18px; }
+.tocit { display: flex; width: 100%; justify-content: space-between; gap: 12px; border: 0; border-bottom: 1px dashed #ddd; background: none; font: inherit; font-size: 15px; padding: 8px 4px; text-align: left; cursor: pointer; color: #222; }
+.tocit.lv1 { padding-left: 22px; font-size: 14px; } .tocit .p { color: #888; font-family: var(--font-num, sans-serif); }
+.bktabs { flex: none; display: flex; gap: 6px; padding: 6px 12px; border-bottom: 1px solid var(--line); background: var(--paper, #fff); }
+.bktabs button { font: inherit; font-size: 14px; padding: 5px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: none; color: var(--ink); cursor: pointer; }
+.bktabs button.on { background: var(--ink); color: #fff; }
+.bkfind { position: absolute; left: 0; right: 0; top: 46px; bottom: 0; z-index: 5; background: var(--paper, #fff); display: flex; flex-direction: column; padding: 12px; gap: 10px; }
+.page.pvpg { position: relative; }
+.bkfind input { font: inherit; font-size: 17px; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; }
+.bkres { flex: 1 1 auto; overflow: auto; }
+.bkhit { display: flex; gap: 12px; width: 100%; text-align: left; border: 0; border-bottom: 1px solid #eee; background: none; font: inherit; padding: 9px 4px; cursor: pointer; color: var(--ink); }
+.bkhit .p { flex: none; width: 56px; font-weight: 700; color: #1F6FB2; } .bkhit .t { font-size: 14px; color: #444; }
+.pkgbox { margin: auto; max-width: 520px; padding: 26px; text-align: center; background: var(--box); border: 2px solid var(--line); border-radius: 18px; }
+.pkgbox h2 { margin: 0 0 8px; } .pkgbox p { color: var(--ink-soft); line-height: 1.6; }
+.pkgbtn { display: inline-block; margin-top: 8px; padding: 10px 22px; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 600; cursor: pointer; }
+.pkgbtn input { display: none; } .pkgst { font-weight: 600; }
 /* ---------- 덤핑방지관세·상계관세 타임라인 ---------- */
 :root { --redpen: #C2362B; }
 .dumpwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 28px; }
@@ -771,7 +811,7 @@ body { height: 100dvh; }
     { id: 's-trade', no: '4교시', nm: '무역실무', ds: '이론 · 협정 · 외국환거래법 · 대외무역법', on: true }
   ];
   /* 마인드맵이 아닌 화면으로 가는 버튼 · 준비 중 버튼 */
-  var READY = { 'v-law': 1, 'soon-dump': 1 };
+  var READY = { 'v-law': 1, 'v-agr': 1, 'soon-dump': 1 };
   var SOON = { 'soon-dump': ['덤핑방지관세·상계관세', '관세법 제51조~제62조'], 'soon-gm': ['감면', '관세법 제4장 제1절'], 'soon-c11': ['제11장 벌칙', '관세법 제268조의2~제282조'] };
   function isReady(id) { return !!(DATA.maps[id] || (DATA.pages && DATA.pages[id]) || READY[id]); }
   function screenInfo(id) {
@@ -787,7 +827,9 @@ body { height: 100dvh; }
     if (id === 's-graph9') return { t: '제9장 통관 관계도', sub: '법 · 시행령 · 시행규칙 위임 관계 · 관별' };
     if (id === 'v-graph') return { t: '관세평가 관계도', sub: '법 30~35조 · 영 · 규칙 · 고시' };
     if (id === 'v-law') return { t: '관세평가 법령', sub: '관세법 제30조~제35조 · 영 · 규칙 · 고시' };
-    if (id === 'v-agr') return { t: '관세평가 협정', sub: 'WTO 관세평가협정 · 권고의견 · 예해 · 사례연구' };
+    if (id === 'v-agr') return { t: '관세평가 협정', sub: '교재 · 협정 원문' };
+    if (id === 'va-book') return { t: '협정 교재', sub: '목차를 누르면 그 쪽으로 · 협정 제목을 누르면 원문으로' };
+    if (/^va-sec-/.test(id)) { var AS = { rule: '관세평가 규칙 및 일반 서설', dec: '결정', ao: '권고의견', cm: '예해', en: '해설', cs: '사례연구' }; return { t: AS[id.slice(7)] || '협정 원문', sub: 'WTO 관세평가 협정집 · 목차를 누르면 그 내용으로' }; }
     if (id === 'v-exam') return { t: '관세평가 기출', sub: '연도별 · 주제별 기출문제' };
     if (id === 'vx-topic') return { t: '주제별 기출', sub: '관세평가 · 10점 문제' };
     if (id === 'vx-past') return { t: '과거 기출', sub: '관세평가 · 50점 문제' };
@@ -1431,7 +1473,7 @@ function tile(cls, o, onClick) {
     secA.appendChild(nav);
   }
   function renderPage(id) {
-    page.textContent = ''; page.classList.remove('dumppg'); page.classList.toggle('flush', id === 's-hs' || id === 's-graph' || id === 's-graph9' || id === 'v-graph' || id === 'v-line');
+    page.textContent = ''; page.classList.remove('dumppg', 'pvpg'); page.classList.toggle('flush', id === 's-hs' || id === 's-graph' || id === 's-graph9' || id === 'v-graph' || id === 'v-line');
     if (id === 'home') {
       page.appendChild(searchBox());
       var g = el('div', 'grid4');
@@ -1486,7 +1528,10 @@ function tile(cls, o, onClick) {
     if (id === 'vx-past') { renderExam(EXAM._past, null, '_past'); return; }
     var vxm = /^vx-(\d+)$/.exec(id);
     if (vxm) { if (EXAM[vxm[1]]) renderExam(EXAM[vxm[1]], null, vxm[1]); else emptyPage(screenInfo(id).t, '아직 문제를 넣지 않았습니다.'); return; }
-    if (id === 'v-law') { renderUnits(DATA.pages['v-law'].rows); return; }
+    if (id === 'v-law') { renderLawScan(); return; }
+    if (id === 'v-agr') { renderAgrHome(); return; }
+    if (id === 'va-book') { renderBook(); return; }
+    if (/^va-sec-/.test(id)) { renderAgrSec(id.slice(7)); return; }
     if (/^v-/.test(id) && id !== 'v-graph' && id !== 'v-line') { emptyPage(screenInfo(id).t, '아직 내용을 넣지 않았습니다.'); return; }
     if (id === 'v-line') {
       var vl = el('iframe', 'embed'); vl.title = '관세평가 관계도 직선형'; embedDoc(vl, 'vlinedoc'); page.appendChild(vl); return;
@@ -2516,13 +2561,14 @@ function tile(cls, o, onClick) {
     };
     document.addEventListener('click', function (e) { if (!fb.contains(e.target)) window.autoFs(); }, true);
   })();
-  function go(id, from, noPush) {
+  function go(id, from, noPush, extra) {
     var cont = DATA.maps[stack[stack.length - 1] && stack[stack.length - 1].id] ? board : page;
     var b = cont.getBoundingClientRect(), ox = b.width / 2, oy = b.height / 2;
     if (from) { var r = from.getBoundingClientRect(); ox = r.left + r.width / 2 - b.left; oy = r.top + r.height / 2 - b.top; }
     saveTop();
     if (stack.length) { stack[stack.length - 1].ox = ox; stack[stack.length - 1].oy = oy; }
     var entry = { id: id, lv: DATA.maps[id] ? 3 : LV };  /* 장 지도는 2단계로 열기 */
+    if (extra) for (var xk in extra) entry[xk] = extra[xk];
     stack.push(entry);
     var t = show(entry);
     if (!noPush) hpush();
@@ -3042,6 +3088,329 @@ function tile(cls, o, onClick) {
       function nav() { if (done) return; try { if (fr.contentWindow && fr.contentWindow.hsGo) { done = true; if (a.hs !== 'rules' || true) fr.contentWindow.hsGo(a.hs); } } catch (e) { } }
       if (fr) { fr.addEventListener('load', function () { setTimeout(nav, 50); }); setTimeout(nav, 600); }
     }
+  }
+
+  /* ================= 교재·협정집 패키지 (기기 안에만 저장) =================
+     스캔본·협정집 페이지 이미지와 목차·검색 자료는 공개 사이트에 올리지 않고,
+     사용자가 처음 한 번 불러온 패키지 파일(.zip, 무압축)을 IndexedDB에 저장해 씀 */
+  var PKG = (function () {
+    var DBN = 'gwanse-pkg', ST = 'files', db = null, meta = {}, urls = {}, order = [];
+    function open() {
+      if (db) return Promise.resolve(db);
+      return new Promise(function (res, rej) {
+        var r = indexedDB.open(DBN, 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore(ST); };
+        r.onsuccess = function () { db = r.result; res(db); };
+        r.onerror = function () { rej(r.error); };
+      });
+    }
+    function tx(mode) { return db.transaction(ST, mode).objectStore(ST); }
+    function get(path) { return open().then(function () { return new Promise(function (res) { var q = tx('readonly').get(path); q.onsuccess = function () { res(q.result || null); }; q.onerror = function () { res(null); }; }); }); }
+    function putMany(list) {
+      return open().then(function () {
+        return new Promise(function (res, rej) {
+          var t = db.transaction(ST, 'readwrite'), s = t.objectStore(ST);
+          list.forEach(function (x) { s.put(x[1], x[0]); });
+          t.oncomplete = res; t.onerror = function () { rej(t.error); }; t.onabort = function () { rej(t.error); };
+        });
+      });
+    }
+    function clear() { return open().then(function () { return new Promise(function (res) { var q = tx('readwrite').clear(); q.onsuccess = res; q.onerror = res; }); }); }
+    function json(name) {
+      if (meta[name]) return Promise.resolve(meta[name]);
+      return get(name).then(function (b) { if (!b) return null; return b.text().then(function (t) { meta[name] = JSON.parse(t); return meta[name]; }); });
+    }
+    /* 이미지 주소: 최근 60장만 메모리에 유지 */
+    function url(path) {
+      if (urls[path]) { order.splice(order.indexOf(path), 1); order.push(path); return Promise.resolve(urls[path]); }
+      return get(path).then(function (b) {
+        if (!b) return null;
+        urls[path] = URL.createObjectURL(b); order.push(path);
+        while (order.length > 60) { var o = order.shift(); URL.revokeObjectURL(urls[o]); delete urls[o]; }
+        return urls[path];
+      });
+    }
+    function ready() { return json('pkg.json').catch(function () { return null; }); }
+    /* 무압축 zip 읽기: 중앙 디렉터리만 읽고, 각 파일은 원본 파일의 조각(Blob)으로 저장 */
+    function u16(v, o) { return v.getUint16(o, true); } function u32(v, o) { return v.getUint32(o, true); }
+    function rd(file, a, b) { return file.slice(a, b).arrayBuffer().then(function (x) { return new DataView(x); }); }
+    /* 파일 전체를 한 번에 읽어서 메모리에서 나눈 뒤, 100개씩 묶어 저장 (조각마다 따로 읽으면 몇 분씩 걸렸음) */
+    function importZip(file, prog) {
+      return file.arrayBuffer().then(function (buf) {
+        var v = new DataView(buf), size = buf.byteLength, e = -1;
+        for (var i = size - 22; i >= Math.max(0, size - 65557); i--) if (u32(v, i) === 0x06054b50) { e = i; break; }
+        if (e < 0) throw new Error('zip 형식이 아니에요');
+        var cnt = u16(v, e + 10), p = u32(v, e + 16), ents = [], dec = new TextDecoder();
+        for (var k = 0; k < cnt; k++) {
+          var meth = u16(v, p + 10), csz = u32(v, p + 20), nl = u16(v, p + 28), xl = u16(v, p + 30), cl = u16(v, p + 32), lo = u32(v, p + 42);
+          var name = dec.decode(new Uint8Array(buf, p + 46, nl));
+          if (meth !== 0) throw new Error('압축된 패키지는 읽을 수 없어요');
+          if (!/\/$/.test(name)) { var st = lo + 30 + u16(v, lo + 26) + u16(v, lo + 28); ents.push({ name: name, a: st, b: st + csz }); }
+          p += 46 + nl + xl + cl;
+        }
+        function type(n) { return /\.webp$/.test(n) ? 'image/webp' : /\.jpe?g$/.test(n) ? 'image/jpeg' : /\.png$/.test(n) ? 'image/png' : 'application/json'; }
+        return clear().then(function () {
+          var i = 0;
+          function next() {
+            if (i >= ents.length) return Promise.resolve();
+            var batch = ents.slice(i, i + 100).map(function (en) { return [en.name, new Blob([new Uint8Array(buf, en.a, en.b - en.a)], { type: type(en.name) })]; });
+            i += batch.length;
+            return putMany(batch).then(function () { if (prog) prog(i, ents.length); return next(); });
+          }
+          return next();
+        });
+      }).then(function () { meta = {}; try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { } });
+    }
+    return { get: get, json: json, url: url, ready: ready, importZip: importZip };
+  })();
+
+  /* 패키지가 없을 때: 한 번만 불러오는 안내 */
+  function pkgGate(host, onReady) {
+    PKG.ready().then(function (m) {
+      if (m) { onReady(m); return; }
+      var box = el('div', 'pkgbox');
+      box.appendChild(el('h2', null, '교재 패키지 불러오기'));
+      box.appendChild(el('p', null, '스캔본·협정집은 이 기기 안에만 저장돼요. 받은 패키지 파일(관세평가-패키지.zip)을 한 번만 골라 주세요.'));
+      var lab = el('label', 'pkgbtn'); lab.appendChild(document.createTextNode('패키지 파일 고르기'));
+      var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.zip,application/zip'; lab.appendChild(inp);
+      var st = el('p', 'pkgst'); box.appendChild(lab); box.appendChild(st); host.appendChild(box);
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0]; if (!f) return;
+        lab.hidden = true; st.textContent = '불러오는 중…';
+        PKG.importZip(f, function (i, n) { st.textContent = '불러오는 중… ' + Math.round(i / n * 100) + '%'; })
+          .then(function () { return PKG.ready(); })
+          .then(function (m2) { if (!m2) throw new Error('패키지 정보가 없어요'); box.remove(); onReady(m2); })
+          .catch(function (e) { st.textContent = '불러오지 못했어요: ' + (e && e.message || e); lab.hidden = false; });
+      });
+    });
+  }
+
+  /* ================= 페이지 보기(스캔본·협정집 공용) =================
+     opt.pages: [{path, ratio(가로/세로), num(오른쪽 아래에 찍을 번호, 없으면 생략)}]
+     opt.spread: true면 가로 화면에서 2쪽씩(첫 쪽은 홀로), 세로 화면에서 1쪽 */
+  function PageView(host, opt) {
+    var wrap = el('div', 'pv'), inner = el('div', 'pvin'), badge = el('div', 'pvbadge');
+    wrap.appendChild(inner); host.appendChild(wrap); host.appendChild(badge);
+    if (opt.head) inner.appendChild(opt.head);
+    var P = opt.pages, rows = [], boxes = [], Z = 1, cur = 0;
+    var land = window.matchMedia('(orientation: landscape)');
+    function pairs() {
+      var two = opt.spread && land.matches, out = [];
+      if (!two) { P.forEach(function (p, i) { out.push([i]); }); return out; }
+      out.push([0]); for (var i = 1; i < P.length; i += 2) out.push(i + 1 < P.length ? [i, i + 1] : [i]);
+      return out;
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var b = e.target, img = b.firstChild;
+        if (e.isIntersecting) { if (!img.getAttribute('src')) PKG.url(P[+b.dataset.i].path).then(function (u) { if (u && b.isConnected) img.src = u; }); }
+        else if (img.getAttribute('src')) img.removeAttribute('src');
+      });
+    }, { root: wrap, rootMargin: '150% 0px' });
+    function build() {
+      [].forEach.call(inner.querySelectorAll('.pvrow'), function (r) { r.remove(); });
+      rows = []; boxes = [];
+      pairs().forEach(function (pr) {
+        var row = el('div', 'pvrow' + (pr.length === 2 ? ' two' : ''));
+        pr.forEach(function (i) {
+          var p = P[i], b = el('div', 'pvpg'); b.dataset.i = i;
+          var img = document.createElement('img'); img.alt = ''; img.draggable = false; b.appendChild(img);
+          if (p.num != null) b.appendChild(el('span', 'pvnum', String(p.num)));
+          (opt.zones ? opt.zones(i) : []).forEach(function (z) {
+            var t = el('button', 'pvz' + (z.cls ? ' ' + z.cls : '')); t.type = 'button';
+            t.style.left = z.l * 100 + '%'; t.style.top = z.t * 100 + '%'; t.style.width = (z.r - z.l) * 100 + '%'; t.style.height = (z.b - z.t) * 100 + '%';
+            if (z.title) t.setAttribute('aria-label', z.title);
+            t.addEventListener('click', function (ev) { ev.stopPropagation(); z.fn(t); });
+            b.appendChild(t);
+          });
+          row.appendChild(b); boxes[i] = b; io.observe(b);
+        });
+        inner.appendChild(row); rows.push(row);
+      });
+      size();
+    }
+    var pend = null;
+    function size() {
+      var vw = wrap.clientWidth - 16, vh = wrap.clientHeight - 16; if (vw <= 0 || vh <= 0) return;
+      P.forEach(function (p, i) {
+        var b = boxes[i]; if (!b) return;
+        var two = b.parentNode.classList.contains('two') || (opt.spread && land.matches);
+        var w = two ? Math.min((vw - 8) / 2, vh * p.ratio) : (land.matches || p.ratio > 1 ? Math.min(vw, vh * p.ratio) : vw);
+        if (opt.fitWidth && !two) w = vw;
+        b.style.width = w + 'px'; b.style.height = (w / p.ratio) + 'px';
+      });
+      if (pend) { var q = pend; pend = null; goPage(q.i || 0, q.f || 0); }
+    }
+    function rowOf(i) { var b = boxes[i]; return b ? b.parentNode : null; }
+    function goPage(i, frac) {
+      var b = boxes[i]; if (!b) return;
+      var y = (b.offsetTop + (frac || 0) * b.offsetHeight) * Z - 8;
+      wrap.scrollTop = Math.max(0, y); upd();
+    }
+    function upd() {
+      if (!wrap.clientHeight || !boxes[0] || !boxes[0].offsetHeight) return;   /* 아직 크기가 안 잡혔으면 위치 기록 안 함 */
+      var mid = wrap.scrollTop / Z + wrap.clientHeight / Z * 0.35, best = 0;
+      for (var i = 0; i < P.length; i++) { var b = boxes[i]; if (b && b.offsetTop <= mid) best = i; else if (b) break; }
+      cur = best;
+      var r = rowOf(best), lab = opt.label ? opt.label(best, r) : String(best + 1);
+      badge.textContent = lab; badge.hidden = !lab;
+      if (opt.onState) opt.onState({ i: cur, f: boxes[cur] ? (wrap.scrollTop / Z - boxes[cur].offsetTop) / boxes[cur].offsetHeight : 0, z: Z });
+    }
+    var rt = 0; wrap.addEventListener('scroll', function () { cancelAnimationFrame(rt); rt = requestAnimationFrame(upd); }, { passive: true });
+    /* 두 손가락 확대·축소 (보고 있던 곳 고정) */
+    function setZ(nz, px, py) {
+      nz = Math.min(4, Math.max(1, nz));
+      var r = wrap.getBoundingClientRect(), x = px - r.left, y = py - r.top;
+      var cx = (wrap.scrollLeft + x) / Z, cy = (wrap.scrollTop + y) / Z;
+      Z = nz; inner.style.zoom = Z; wrap.scrollLeft = cx * Z - x; wrap.scrollTop = cy * Z - y; upd();
+    }
+    var pin = null;
+    function dst(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    wrap.addEventListener('touchstart', function (e) { if (e.touches.length === 2) pin = { d: dst(e.touches), z: Z }; }, { passive: true });
+    wrap.addEventListener('touchmove', function (e) {
+      if (!pin || e.touches.length !== 2) return; e.preventDefault(); var t = e.touches;
+      setZ(pin.z * dst(t) / pin.d, (t[0].clientX + t[1].clientX) / 2, (t[0].clientY + t[1].clientY) / 2);
+    }, { passive: false });
+    wrap.addEventListener('touchend', function (e) { if (e.touches.length < 2) pin = null; });
+    wrap.addEventListener('wheel', function (e) { if (!e.ctrlKey) return; e.preventDefault(); setZ(Z * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY); }, { passive: false });
+    var mq = function () { var i = cur; build(); goPage(i); };
+    if (land.addEventListener) land.addEventListener('change', mq);
+    var ro = new ResizeObserver(function () { if (pend) { size(); return; } var i = cur; size(); goPage(i); }); ro.observe(wrap);
+    if (opt.start) { var s = opt.start; pend = { i: s.i || 0, f: s.f || 0 }; cur = pend.i; if (s.z > 1) { Z = s.z; inner.style.zoom = Z; } }
+    build();
+    if (!pend) upd();
+    return { goPage: goPage, cur: function () { return cur; }, box: function (i) { return boxes[i]; }, wrap: wrap,
+      flash: function (i, zs) {          /* 검색 결과 강조 */
+        var b = boxes[i]; if (!b) return;
+        [].forEach.call(b.querySelectorAll('.pvhit'), function (h) { h.remove(); });
+        zs.forEach(function (z) { var h = el('div', 'pvhit'); h.style.left = z.l * 100 + '%'; h.style.top = z.t * 100 + '%'; h.style.width = (z.r - z.l) * 100 + '%'; h.style.height = (z.b - z.t) * 100 + '%'; b.appendChild(h); });
+      } };
+  }
+  function pvScreen() { page.classList.add('pvpg'); var h = el('div', 'pvhost'); page.appendChild(h); return h; }
+  function curEntry() { return stack[stack.length - 1]; }
+
+  /* ---------- 관세평가 법령: 스캔본 ---------- */
+  function renderLawScan() {
+    var host = pvScreen(), nav = el('nav', 'qnav pvq'); host.parentNode.insertBefore(nav, host);
+    pkgGate(host, function (M) {
+      PKG.json('law.json').then(function (L) {
+        var en = curEntry();
+        var pv = PageView(host, { pages: L.pages, start: en.vs, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; } });
+        (L.arts || []).forEach(function (a) {
+          var b = el('button', 'qchip', a.t); b.type = 'button';
+          b.addEventListener('click', function () { pv.goPage(a.page - 1, a.y || 0); });
+          nav.appendChild(b);
+        });
+      });
+    });
+  }
+
+  /* ---------- 관세평가 협정: 첫 화면 (왼쪽 교재 / 오른쪽 협정 원문 6분할) ---------- */
+  var AGR_SECS = [['rule', '관세평가 규칙 및 일반 서설'], ['dec', '결정'], ['ao', '권고의견'], ['cm', '예해'], ['en', '해설'], ['cs', '사례연구']];
+  function renderAgrHome() {
+    page.classList.add('pvpg');
+    var g = el('div', 'agrhome');
+    var left = el('button', 'agrbook'); left.type = 'button';
+    left.appendChild(el('span', 'nm', '교재')); left.appendChild(el('span', 'ds', '협정 교재 스캔본 · 목차 · 검색'));
+    left.addEventListener('click', function () { go('va-book', left); });
+    var right = el('div', 'agrsecs');
+    AGR_SECS.forEach(function (s) {
+      var b = el('button', 'agrsec'); b.type = 'button'; b.appendChild(el('span', 'nm', s[1]));
+      b.addEventListener('click', function () { go('va-sec-' + s[0], b); });
+      right.appendChild(b);
+    });
+    g.appendChild(left); g.appendChild(right); page.appendChild(g);
+  }
+
+  /* ---------- 협정 원문 영역 ---------- */
+  function renderAgrSec(key) {
+    var host = pvScreen();
+    pkgGate(host, function () {
+      Promise.all([PKG.json('agr/meta.json'), PKG.json('agr/toc.json')]).then(function (r) {
+        var M = r[0], T = r[1], sec = M.secs.filter(function (s) { return s.key === key; })[0];
+        var pages = [], en = curEntry();
+        for (var n = sec.first; n <= sec.last; n++) pages.push({ path: 'agr/a' + ('000' + n).slice(-4) + '.webp', ratio: M.ratio, num: n });
+        var toc = T[key] || {}, head = null, pv;
+        if (key === 'rule' || toc.extra) {
+          head = el('div', 'agrtoc');
+          if (key === 'rule') head.appendChild(el('h2', null, '목차'));
+          ((key === 'rule' ? toc.items : toc.extra) || []).forEach(function (it) {
+            var b = el('button', 'tocit' + (it.lv ? ' lv1' : '')); b.type = 'button';
+            b.appendChild(el('span', 't', it.t)); b.appendChild(el('span', 'p', String(it.to)));
+            b.addEventListener('click', function () { pv.goPage(it.to - sec.first, it.y || 0); });
+            head.appendChild(b);
+          });
+        }
+        var zones = {};
+        (toc.items || []).forEach(function (it) {
+          if (key === 'rule' || !it.to) return;
+          (zones[it.pg] = zones[it.pg] || []).push({ l: it.l - 0.01, t: it.top - 0.006, r: Math.max(it.r, 0.9) + 0.01, b: it.bot + 0.006, title: it.no, fn: function () { pv.goPage(it.to - sec.first, 0); } });
+        });
+        var start = en.vs || (en.at ? { i: en.at - sec.first, f: en.atf || 0 } : null);
+        pv = PageView(host, { pages: pages, spread: true, head: head, start: start, onState: function (s) { en.vs = s; },
+          zones: function (i) { return zones[i + sec.first] || []; }, label: function () { return ''; } });
+      });
+    });
+  }
+
+  /* ---------- 협정 교재 ---------- */
+  function renderBook() {
+    var host = pvScreen(), tabs = el('div', 'bktabs');
+    var tView = el('button', 'on', '교재'), tFind = el('button', null, '검색'); tView.type = tFind.type = 'button';
+    tabs.appendChild(tView); tabs.appendChild(tFind); host.parentNode.insertBefore(tabs, host);
+    var panel = el('div', 'bkfind'); panel.hidden = true; host.parentNode.appendChild(panel);
+    pkgGate(host, function () {
+      PKG.json('book/meta.json').then(function (B) {
+        var en = curEntry(), pv;
+        var pages = B.pages.map(function (p, i) { return { path: 'book/b' + ('000' + (i + 1)).slice(-4) + '.webp', ratio: p.r || B.ratio }; });
+        var zones = {};
+        (B.toc || []).forEach(function (z) { (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'toc', fn: function () { pv.goPage(z.to - 1, 0); } }); });
+        (B.links || []).forEach(function (z) {
+          (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'agr', title: z.k, fn: function (t) { go('va-sec-' + z.sec, t, false, { at: z.to, atf: z.f || 0 }); } });
+        });
+        pv = PageView(host, { pages: pages, spread: true, start: en.vs, onState: function (s) { en.vs = s; },
+          zones: function (i) { return zones[i + 1] || []; },
+          label: function (i, row) { var a = row ? [].map.call(row.children, function (b) { return +b.dataset.i + 1; }) : [i + 1]; return a.join('–') + ' / ' + pages.length; } });
+        /* 검색 */
+        var inp = document.createElement('input'); inp.type = 'search'; inp.placeholder = '교재에서 찾기 (띄어쓰기 무시)';
+        var res = el('div', 'bkres'); panel.appendChild(inp); panel.appendChild(res);
+        var IDX = null;
+        function load() { return IDX ? Promise.resolve(IDX) : PKG.json('book/search.json').then(function (j) { IDX = (j || []).map(function (pg) { var s = '', map = []; pg.forEach(function (w, k) { for (var c = 0; c < w[0].length; c++) { s += w[0][c]; map.push(k); } }); return { s: s, map: map, w: pg }; }); return IDX; }); }
+        function norm(q) { return q.replace(/\s+/g, ''); }
+        var tm = 0;
+        inp.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(run, 250); });
+        function run() {
+          var q = norm(inp.value); res.textContent = ''; if (q.length < 2) return;
+          load().then(function (ix) {
+            var n = 0;
+            ix.forEach(function (pg, pi) {
+              var at = 0, f;
+              while ((f = pg.s.indexOf(q, at)) >= 0 && n < 300) {
+                n++; at = f + q.length;
+                var w0 = pg.map[f], w1 = pg.map[f + q.length - 1];
+                var a = el('button', 'bkhit'); a.type = 'button';
+                a.appendChild(el('span', 'p', (pi + 1) + '쪽'));
+                var ctx = pg.w.slice(Math.max(0, w0 - 6), w1 + 7).map(function (w) { return w[0]; }).join(' ');
+                a.appendChild(el('span', 't', ctx));
+                (function (pi, w0, w1) {
+                  a.addEventListener('click', function () {
+                    show(false);
+                    var ws = pg.w.slice(w0, w1 + 1), z = { l: 1, t: 1, r: 0, b: 0 };
+                    ws.forEach(function (w) { z.l = Math.min(z.l, w[1]); z.t = Math.min(z.t, w[2]); z.r = Math.max(z.r, w[3]); z.b = Math.max(z.b, w[4]); });
+                    pv.goPage(pi, Math.max(0, z.t - 0.15)); pv.flash(pi, [z]);
+                  });
+                })(pi, w0, w1);
+                res.appendChild(a);
+              }
+            });
+            if (!n) res.appendChild(el('p', 'bknone', '찾는 내용이 없어요.'));
+          });
+        }
+        function show(f) { panel.hidden = !f; tFind.classList.toggle('on', f); tView.classList.toggle('on', !f); if (f) inp.focus(); }
+        tFind.addEventListener('click', function () { show(true); });
+        tView.addEventListener('click', function () { show(false); });
+      });
+    });
   }
 
   /* ---------- 시작 ---------- */
