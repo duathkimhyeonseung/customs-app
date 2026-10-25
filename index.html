@@ -623,6 +623,17 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .agrsecs { display: grid; grid-template-rows: repeat(6, 1fr); gap: 10px; min-height: 0; }
 .agrsec { border: 2px solid var(--line); border-radius: 14px; background: var(--box); font: inherit; font-size: 19px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .agrbook:active, .agrsec:active { background: var(--marker); }
+.corrwrap { padding: 4px 4px 40px; }
+.corr { width: 100%; border-collapse: collapse; font-size: 15px; }
+.corr th { position: sticky; top: 0; background: var(--paper, #FEFCF7); text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--line); font-size: 14px; z-index: 1; }
+.corr td { padding: 6px 10px; border-bottom: 1px solid #e5e2da; vertical-align: top; }
+.corr tr.cgrp td { border-top: 2px solid var(--line); }
+.corr .c-law { width: 150px; } .corr .c-topic { width: 230px; } .corr .c-d { width: 110px; }
+.corr .c-topic { color: var(--ink-soft); font-size: 14px; }
+.cchip { display: inline-block; margin: 2px 6px 2px 0; padding: 4px 11px; border-radius: 999px; border: 1.5px solid; background: #fff; font: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.cchip.law { border-color: #1F5FA8; color: #1F5FA8; font-weight: 600; }
+.cchip.a { border-color: #3d6b4f; color: #3d6b4f; } .cchip.n { border-color: #7a5a1f; color: #7a5a1f; } .cchip.d { border-color: #7a3db8; color: #7a3db8; }
+.cchip:active { background: var(--marker); }
 .pkgre { position: absolute; left: 28px; bottom: 26px; padding: 7px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper, #fff); font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .pkgre input { display: none; }
 .pkgremsg { position: absolute; left: 30px; bottom: 64px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
@@ -793,6 +804,7 @@ body { height: 100dvh; }
 <script type="application/json" id="graphdoc" data-src="graph.html">""</script>
 <script type="application/json" id="graph9doc" data-src="graph9.html">""</script>
 <script type="application/json" id="vlinedoc" data-src="vline.html">""</script>
+<script type="application/json" id="corrdoc">[{"law": "30조", "topic": "과세가격 결정의 원칙", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "일반서설", "to": 5, "y": 0}, {"k": "a", "t": "제1조", "to": 8, "y": 0.1706}], "note": [{"k": "n", "t": "일반 주해", "to": 24, "y": 0}], "dec": []}, {"law": "30조 1항 본문", "topic": "거래가격 · 가산요소", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1항", "to": 8, "y": 0.1706}, {"k": "a", "t": "제8조 1항", "to": 16, "y": 0.1004}], "note": [{"k": "n", "t": "제1조 주해", "to": 26, "y": 0}], "dec": []}, {"law": "30조 1항 1호", "topic": "수수료·중개료 (구매수수료 제외)", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 1(a)(i)", "to": 16, "y": 0.1004}], "note": [{"k": "n", "t": "제8조 주해", "to": 40, "y": 0}], "dec": []}, {"law": "30조 1항 2호", "topic": "용기·포장비용", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 1(a)(ii)(iii)", "to": 16, "y": 0.1004}], "note": [], "dec": []}, {"law": "30조 1항 3호", "topic": "생산지원", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 1(b)", "to": 16, "y": 0.1004}], "note": [{"k": "n", "t": "제8조 주해 1(b)(ii)·(iv)", "to": 40, "y": 0}], "dec": []}, {"law": "30조 1항 4호", "topic": "권리사용료", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 1(c)", "to": 16, "y": 0.1004}], "note": [{"k": "n", "t": "제8조 주해 1(c)", "to": 40, "y": 0}], "dec": []}, {"law": "30조 1항 5호", "topic": "사후귀속이익", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 1(d)", "to": 16, "y": 0.1004}], "note": [], "dec": []}, {"law": "30조 1항 6호", "topic": "운임·보험료", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 2항", "to": 16, "y": 0.1004}], "note": [], "dec": []}, {"law": "30조 1항 단서", "topic": "객관적·수량화 자료", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 3항", "to": 16, "y": 0.1004}], "note": [], "dec": []}, {"law": "30조 2항 본문", "topic": "실제지급가격 · 간접지급", "lp": 1, "ly": 0.07, "agr": [], "note": [{"k": "n", "t": "제1조 주해 실제지급가격", "to": 26, "y": 0}], "dec": []}, {"law": "30조 2항 1호", "topic": "수입 후 건설·조립 등 비용", "lp": 1, "ly": 0.07, "agr": [], "note": [{"k": "n", "t": "제1조 주해 3(a)", "to": 26, "y": 0}], "dec": []}, {"law": "30조 2항 2호", "topic": "수입항 도착 후 운임 등", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제8조 2항", "to": 16, "y": 0.1004}], "note": [{"k": "n", "t": "제1조 주해 3(b)", "to": 26, "y": 0}], "dec": []}, {"law": "30조 2항 3호", "topic": "관세 등 세금", "lp": 1, "ly": 0.07, "agr": [], "note": [{"k": "n", "t": "제1조 주해 3(c)", "to": 26, "y": 0}], "dec": []}, {"law": "30조 2항 4호", "topic": "연불이자", "lp": 1, "ly": 0.07, "agr": [], "note": [], "dec": [{"k": "d", "t": "결정 3.1", "sec": "dec", "to": 49, "y": 0}]}, {"law": "30조 3항 본문", "topic": "거래가격 배제", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1항", "to": 8, "y": 0.1706}], "note": [], "dec": []}, {"law": "30조 3항 1호", "topic": "처분·사용 제한", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1(a)", "to": 8, "y": 0.1706}], "note": [{"k": "n", "t": "제1조 주해 1(a)(iii)", "to": 26, "y": 0}], "dec": []}, {"law": "30조 3항 2호", "topic": "조건·사정", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1(b)", "to": 8, "y": 0.1706}], "note": [{"k": "n", "t": "제1조 주해 1(b)", "to": 26, "y": 0}], "dec": []}, {"law": "30조 3항 3호", "topic": "사후귀속이익", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1(c)", "to": 8, "y": 0.1706}], "note": [], "dec": []}, {"law": "30조 3항 4호", "topic": "특수관계", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제1조 1(d)·2항", "to": 8, "y": 0.1706}, {"k": "a", "t": "제15조 4·5항", "to": 21, "y": 0.1004}], "note": [{"k": "n", "t": "제1조 주해 2항", "to": 26, "y": 0}, {"k": "n", "t": "제15조 주해", "to": 45, "y": 0}], "dec": []}, {"law": "30조 4항", "topic": "신고가격 의심 · 자료 요구", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제17조", "to": 23, "y": 0.3031}], "note": [], "dec": [{"k": "d", "t": "결정 6.1", "sec": "dec", "to": 53, "y": 0}]}, {"law": "30조 5항", "topic": "거래가격 불인정 · 협의·통보", "lp": 1, "ly": 0.07, "agr": [{"k": "a", "t": "제16조", "to": 23, "y": 0.1004}], "note": [], "dec": [{"k": "d", "t": "결정 6.1", "sec": "dec", "to": 53, "y": 0}]}, {"law": "31조", "topic": "동종·동질물품 (제2방법)", "lp": 13, "ly": 0.037, "agr": [{"k": "a", "t": "제2조", "to": 10, "y": 0.197}, {"k": "a", "t": "제15조 2(a)", "to": 21, "y": 0.1004}], "note": [{"k": "n", "t": "제2조 주해", "to": 30, "y": 0}], "dec": []}, {"law": "31조 1항", "topic": "동시·거의 동시 · 같은 거래단계·수량", "lp": 13, "ly": 0.037, "agr": [{"k": "a", "t": "제2조 1(a)(b)", "to": 10, "y": 0.197}], "note": [{"k": "n", "t": "제2조 주해", "to": 30, "y": 0}], "dec": []}, {"law": "31조 2항", "topic": "가격의 정확성 의심", "lp": 13, "ly": 0.037, "agr": [{"k": "a", "t": "제2조", "to": 10, "y": 0.197}], "note": [], "dec": []}, {"law": "31조 3항", "topic": "거래가격이 둘 이상 → 최저가격", "lp": 13, "ly": 0.037, "agr": [{"k": "a", "t": "제2조 3항", "to": 10, "y": 0.197}], "note": [{"k": "n", "t": "제2조 주해", "to": 30, "y": 0}], "dec": []}, {"law": "32조", "topic": "유사물품 (제3방법)", "lp": 13, "ly": 0.066, "agr": [{"k": "a", "t": "제3조", "to": 11, "y": 0.1004}, {"k": "a", "t": "제15조 2(b)", "to": 21, "y": 0.1004}], "note": [{"k": "n", "t": "제3조 주해", "to": 32, "y": 0}], "dec": []}, {"law": "32조 1항", "topic": "유사물품 거래가격", "lp": 13, "ly": 0.066, "agr": [{"k": "a", "t": "제3조 1항", "to": 11, "y": 0.1004}], "note": [{"k": "n", "t": "제3조 주해", "to": 32, "y": 0}], "dec": []}, {"law": "32조 3항", "topic": "거래가격이 둘 이상 → 최저가격", "lp": 13, "ly": 0.066, "agr": [{"k": "a", "t": "제3조 3항", "to": 11, "y": 0.1004}], "note": [{"k": "n", "t": "제3조 주해", "to": 32, "y": 0}], "dec": []}, {"law": "33조", "topic": "국내판매가격 (제4방법)", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조", "to": 12, "y": 0.2996}], "note": [{"k": "n", "t": "제5조 주해", "to": 33, "y": 0}], "dec": []}, {"law": "33조 1항 본문", "topic": "단위가격 기초 · 순서 변경(단서)", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조 1(a)", "to": 12, "y": 0.2996}, {"k": "a", "t": "제4조", "to": 12, "y": 0.1004}], "note": [{"k": "n", "t": "제5조 주해", "to": 33, "y": 0}], "dec": []}, {"law": "33조 1항 2호", "topic": "이윤·일반경비 / 수수료", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조 1(a)(i)", "to": 12, "y": 0.2996}], "note": [{"k": "n", "t": "제5조 주해", "to": 33, "y": 0}], "dec": []}, {"law": "33조 1항 3호", "topic": "수입국 내 운임·보험료", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조 1(a)(ii)", "to": 12, "y": 0.2996}], "note": [], "dec": []}, {"law": "33조 1항 4호", "topic": "관세 등 세금", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조 1(a)(iii)", "to": 12, "y": 0.2996}], "note": [], "dec": []}, {"law": "33조 3항", "topic": "국내 가공 후 판매", "lp": 14, "ly": 0.586, "agr": [{"k": "a", "t": "제5조 2항", "to": 12, "y": 0.2996}], "note": [{"k": "n", "t": "제5조 주해", "to": 33, "y": 0}], "dec": []}, {"law": "34조", "topic": "산정가격 (제5방법)", "lp": 18, "ly": 0.015, "agr": [{"k": "a", "t": "제6조", "to": 14, "y": 0.1004}], "note": [{"k": "n", "t": "제6조 주해", "to": 36, "y": 0}], "dec": []}, {"law": "34조 1항", "topic": "재료비·가공비 / 이윤·일반경비 / 운임 등", "lp": 18, "ly": 0.015, "agr": [{"k": "a", "t": "제6조 1항", "to": 14, "y": 0.1004}], "note": [{"k": "n", "t": "제6조 주해", "to": 36, "y": 0}], "dec": []}, {"law": "34조 2항", "topic": "산정 자료 · 외국 생산자", "lp": 18, "ly": 0.015, "agr": [{"k": "a", "t": "제6조 2·3항", "to": 14, "y": 0.1004}], "note": [{"k": "n", "t": "제6조 주해", "to": 36, "y": 0}], "dec": []}, {"law": "35조", "topic": "합리적 기준 (제6방법)", "lp": 19, "ly": 0.766, "agr": [{"k": "a", "t": "제7조", "to": 15, "y": 0.1004}], "note": [{"k": "n", "t": "제7조 주해", "to": 39, "y": 0}], "dec": []}, {"law": "35조 2항", "topic": "사용할 수 없는 방법", "lp": 19, "ly": 0.766, "agr": [{"k": "a", "t": "제7조 2항", "to": 15, "y": 0.1004}], "note": [], "dec": []}]</script>
 <script type="application/json" id="vgraphdoc" data-src="vgraph.html">""</script>
 <script type="application/json" id="hsdoc" data-src="hs.html">""</script>
 <script>
@@ -832,6 +844,7 @@ body { height: 100dvh; }
     if (id === 'v-graph') return { t: '관세평가 관계도', sub: '법 30~35조 · 영 · 규칙 · 고시' };
     if (id === 'v-law') return { t: '관세평가 법령', sub: '관세법 제30조~제35조 · 영 · 규칙 · 고시' };
     if (id === 'v-agr') return { t: '관세평가 협정', sub: '교재 · 협정 원문' };
+    if (id === 'v-corr') return { t: '법령 · 협정 대응표', sub: '관세법 제30조~제35조 항·호별 WTO 관세평가협정 조문 · 주해 · 결정 — 누르면 해당 쪽으로' };
     if (id === 'va-book') return { t: '협정 교재', sub: '목차를 누르면 그 쪽으로 · 협정 제목을 누르면 원문으로' };
     if (/^va-sec-/.test(id)) { var AS = { rule: '관세평가 규칙 및 일반 서설', dec: '결정', ao: '권고의견', cm: '예해', en: '해설', cs: '사례연구' }; return { t: AS[id.slice(7)] || '협정 원문', sub: 'WTO 관세평가 협정집 · 목차를 누르면 그 내용으로' }; }
     if (id === 'v-exam') return { t: '관세평가 기출', sub: '연도별 · 주제별 기출문제' };
@@ -1534,6 +1547,7 @@ function tile(cls, o, onClick) {
     if (vxm) { if (EXAM[vxm[1]]) renderExam(EXAM[vxm[1]], null, vxm[1]); else emptyPage(screenInfo(id).t, '아직 문제를 넣지 않았습니다.'); return; }
     if (id === 'v-law') { renderLawScan(); return; }
     if (id === 'v-agr') { renderAgrHome(); return; }
+    if (id === 'v-corr') { renderCorr(); return; }
     if (id === 'va-book') { renderBook(); return; }
     if (/^va-sec-/.test(id)) { renderAgrSec(id.slice(7)); return; }
     if (/^v-/.test(id) && id !== 'v-graph' && id !== 'v-line') { emptyPage(screenInfo(id).t, '아직 내용을 넣지 않았습니다.'); return; }
@@ -2451,6 +2465,9 @@ function tile(cls, o, onClick) {
       var gb = el('button', 'hbtn'); gb.type = 'button'; gb.appendChild(document.createTextNode('관계도 ')); gb.appendChild(el('span', 'arr', '›'));
       gb.addEventListener('click', function () { go('v-graph', gb); });
       vt.appendChild(gb);
+      var cb = el('button', 'hbtn'); cb.type = 'button'; cb.appendChild(document.createTextNode('협정 대응표 ')); cb.appendChild(el('span', 'arr', '›'));
+      cb.addEventListener('click', function () { go('v-corr', cb); });
+      vt.appendChild(cb);
     }
     backBtn.hidden = stack.length < 2; ctl.hidden = !isMap;
     ctl.querySelector('.legend').hidden = id === 'm-law' || id === 'm-rf';
@@ -3343,6 +3360,30 @@ function tile(cls, o, onClick) {
         });
       });
     });
+  }
+
+  /* ---------- 법령 · 협정 대응표 ---------- */
+  function renderCorr() {
+    var rows = JSON.parse(document.getElementById('corrdoc').textContent);
+    var tb = el('table', 'corr'), hd = el('tr');
+    ['관세법', '내용', '협정 조문', '부속서 I 주해', '결정'].forEach(function (t) { hd.appendChild(el('th', null, t)); });
+    var th = el('thead'); th.appendChild(hd); tb.appendChild(th);
+    var body = el('tbody'); tb.appendChild(body);
+    function chip(cls, t, fn) { var b = el('button', 'cchip ' + cls, t); b.type = 'button'; b.addEventListener('click', function () { fn(b); }); return b; }
+    var prev = '';
+    rows.forEach(function (r) {
+      var tr = el('tr'), art = r.law.split(' ')[0];
+      if (art !== prev) { tr.className = 'cgrp'; prev = art; }
+      var c0 = el('td', 'c-law'); c0.appendChild(chip('law', r.law, function (b) { go('v-law', b, false, { vs: { i: r.lp - 1, f: r.ly } }); }));
+      tr.appendChild(c0); tr.appendChild(el('td', 'c-topic', r.topic));
+      [['agr', 'a'], ['note', 'n'], ['dec', 'd']].forEach(function (k) {
+        var td = el('td', 'c-' + k[1]);
+        (r[k[0]] || []).forEach(function (x) { td.appendChild(chip(k[1], x.t, function (b) { go('va-sec-' + (x.sec || 'rule'), b, false, { at: x.to, atf: x.y || 0 }); })); });
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    var w = el('div', 'corrwrap'); w.appendChild(tb); page.appendChild(w);
   }
 
   /* ---------- 관세평가 협정: 첫 화면 (왼쪽 교재 / 오른쪽 협정 원문 6분할) ---------- */
