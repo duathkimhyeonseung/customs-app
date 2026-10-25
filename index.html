@@ -612,6 +612,7 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .pvz { position: absolute; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 4px; }
 .pvz:active { background: rgba(31,111,178,.16); }
 .pvz.agr { border-bottom: 2px solid rgba(31,111,178,.55); }
+.pvhit.keep { animation: none; background: rgba(255,214,0,.42); }
 .pvhit { position: absolute; background: rgba(255,214,0,.38); border-radius: 3px; pointer-events: none; animation: pvhit 2.4s ease-out 1 forwards; }
 @keyframes pvhit { 0%, 70% { opacity: 1; } 100% { opacity: .35; } }
 .pvbadge { position: absolute; right: 14px; bottom: 12px; padding: 4px 11px; border-radius: 999px; background: rgba(30,30,30,.72); color: #fff; font: 600 13px/1.4 var(--font-num, sans-serif); pointer-events: none; }
@@ -3214,7 +3215,8 @@ function tile(cls, o, onClick) {
     function pairs() {
       var two = opt.spread && land.matches, out = [];
       if (!two) { P.forEach(function (p, i) { out.push([i]); }); return out; }
-      out.push([0]); for (var i = 1; i < P.length; i += 2) out.push(i + 1 < P.length ? [i, i + 1] : [i]);
+      var s0 = opt.cover === false ? 0 : 1; if (s0) out.push([0]);
+      for (var i = s0; i < P.length; i += 2) out.push(i + 1 < P.length ? [i, i + 1] : [i]);
       return out;
     }
     var io = new IntersectionObserver(function (es) {
@@ -3304,10 +3306,10 @@ function tile(cls, o, onClick) {
     build();
     if (!pend) upd();
     var api = { goPage: goPage, jump: jump, cur: function () { return cur; }, box: function (i) { return boxes[i]; }, wrap: wrap,
-      flash: function (i, zs) {          /* 검색 결과 강조 */
+      flash: function (i, zs, keep) {    /* 검색 결과 강조 (keep: 법령집에서 넘어온 인용 부분 — 계속 표시) */
         var b = boxes[i]; if (!b) return;
-        [].forEach.call(b.querySelectorAll('.pvhit'), function (h) { h.remove(); });
-        zs.forEach(function (z) { var h = el('div', 'pvhit'); h.style.left = z.l * 100 + '%'; h.style.top = z.t * 100 + '%'; h.style.width = (z.r - z.l) * 100 + '%'; h.style.height = (z.b - z.t) * 100 + '%'; b.appendChild(h); });
+        if (!keep) [].forEach.call(b.querySelectorAll('.pvhit:not(.keep)'), function (h) { h.remove(); });
+        zs.forEach(function (z) { var h = el('div', 'pvhit' + (keep ? ' keep' : '')); h.style.left = z.l * 100 + '%'; h.style.top = z.t * 100 + '%'; h.style.width = (z.r - z.l) * 100 + '%'; h.style.height = (z.b - z.t) * 100 + '%'; b.appendChild(h); });
       } };
     activePV = api;
     return api;
@@ -3322,7 +3324,15 @@ function tile(cls, o, onClick) {
     pkgGate(host, function (M) {
       PKG.json('law.json').then(function (L) {
         var en = curEntry();
-        var pv = PageView(host, { pages: L.pages, start: en.vs, entry: en, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; } });
+        var LZ = {};
+        (L.links || []).forEach(function (z) {
+          (LZ[z.pg] = LZ[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'agr', title: z.k, fn: function (t) {
+            var h0 = z.hl && z.hl[0], at = h0 ? h0.n : z.to, atf = h0 ? Math.max(0, h0.rects[0].t - 0.08) : 0;
+            go('va-sec-' + z.sec, t, false, { at: at, atf: atf, hl: z.hl || [] });
+          } });
+        });
+        var pv = PageView(host, { pages: L.pages, start: en.vs, entry: en, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; },
+          zones: function (i) { return LZ[i + 1] || []; } });
         (L.arts || []).forEach(function (a) {
           var b = el('button', 'qchip', a.t); b.type = 'button';
           b.addEventListener('click', function () { pv.jump(a.page - 1, a.y || 0); });
@@ -3376,6 +3386,8 @@ function tile(cls, o, onClick) {
         var start = en.vs || (en.at ? { i: en.at - sec.first, f: en.atf || 0 } : null);
         pv = PageView(host, { pages: pages, spread: true, head: head, start: start, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + sec.first] || []; }, label: function () { return ''; } });
+        /* 법령집에서 넘어왔으면 법령집에 실린 부분을 원문에서 강조 */
+        (en.hl || []).forEach(function (h) { pv.flash(h.n - sec.first, h.rects.map(function (r) { return { l: r.l - 0.004, t: r.t - 0.003, r: r.r + 0.004, b: r.b + 0.003 }; }), true); });
       });
     });
   }
@@ -3395,7 +3407,7 @@ function tile(cls, o, onClick) {
         (B.links || []).forEach(function (z) {
           (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'agr', title: z.k, fn: function (t) { go('va-sec-' + z.sec, t, false, { at: z.to, atf: z.f || 0 }); } });
         });
-        pv = PageView(host, { pages: pages, spread: true, start: en.vs, entry: en, onState: function (s) { en.vs = s; },
+        pv = PageView(host, { pages: pages, spread: true, cover: B.cover !== false, start: en.vs, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + 1] || []; },
           label: function (i, row) { var a = row ? [].map.call(row.children, function (b) { return +b.dataset.i + 1; }) : [i + 1]; return a.join('–') + ' / ' + pages.length; } });
         /* 검색 */
