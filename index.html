@@ -3185,7 +3185,7 @@ function tile(cls, o, onClick) {
       return file.arrayBuffer().then(function (buf) {
         var v = new DataView(buf), size = buf.byteLength, e = -1;
         for (var i = size - 22; i >= Math.max(0, size - 65557); i--) if (u32(v, i) === 0x06054b50) { e = i; break; }
-        if (e < 0) throw new Error('zip 형식이 아니에요');
+        if (e < 0) throw new Error('파일 끝부분이 없어요 (받은 크기 ' + (size / 1e6).toFixed(1) + 'MB) — 내려받기가 덜 됐거나 다른 파일이에요');
         var cnt = u16(v, e + 10), p = u32(v, e + 16), ents = [], dec = new TextDecoder();
         for (var k = 0; k < cnt; k++) {
           var meth = u16(v, p + 10), csz = u32(v, p + 20), nl = u16(v, p + 28), xl = u16(v, p + 30), cl = u16(v, p + 32), lo = u32(v, p + 42);
@@ -3210,18 +3210,25 @@ function tile(cls, o, onClick) {
     return { get: get, json: json, url: url, ready: ready, importZip: importZip };
   })();
 
+  /* 여러 조각(…part1, part2 …)을 한꺼번에 고르면 이름 순서대로 이어 붙여 하나로 */
+  function pickedFile(inp) {
+    var fs = [].slice.call(inp.files || []); if (!fs.length) return null;
+    if (fs.length === 1) return fs[0];
+    fs.sort(function (a, b) { return a.name.localeCompare(b.name, undefined, { numeric: true }); });
+    return new Blob(fs);
+  }
   /* 패키지가 없을 때: 한 번만 불러오는 안내 */
   function pkgGate(host, onReady) {
     PKG.ready().then(function (m) {
       if (m) { onReady(m); return; }
       var box = el('div', 'pkgbox');
       box.appendChild(el('h2', null, '교재 패키지 불러오기'));
-      box.appendChild(el('p', null, '스캔본·협정집은 이 기기 안에만 저장돼요. 받은 패키지 파일(관세평가-패키지.zip)을 한 번만 골라 주세요.'));
+      box.appendChild(el('p', null, '스캔본·협정집은 이 기기 안에만 저장돼요. 받은 패키지 파일을 한 번만 골라 주세요. 조각 파일(part1~)로 받았으면 조각을 모두 함께 고르면 돼요.'));
       var lab = el('label', 'pkgbtn'); lab.appendChild(document.createTextNode('패키지 파일 고르기'));
-      var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.zip,application/zip'; lab.appendChild(inp);
+      var inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true; lab.appendChild(inp);
       var st = el('p', 'pkgst'); box.appendChild(lab); box.appendChild(st); host.appendChild(box);
       inp.addEventListener('change', function () {
-        var f = inp.files && inp.files[0]; if (!f) return;
+        var f = pickedFile(inp); if (!f) return;
         lab.hidden = true; st.textContent = '불러오는 중…';
         PKG.importZip(f, function (i, n) { st.textContent = '불러오는 중… ' + Math.round(i / n * 100) + '%'; })
           .then(function () { return PKG.ready(); })
@@ -3414,10 +3421,10 @@ function tile(cls, o, onClick) {
     g.appendChild(left); g.appendChild(right); page.appendChild(g);
     /* 패키지 새로 불러오기 (새 패키지 파일을 받았을 때) */
     var rb = el('label', 'pkgre'); rb.appendChild(document.createTextNode('패키지 새로 불러오기'));
-    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.zip,application/zip'; rb.appendChild(inp);
+    var inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true; rb.appendChild(inp);
     var msg = el('span', 'pkgremsg'); page.appendChild(rb); page.appendChild(msg);
     inp.addEventListener('change', function () {
-      var f = inp.files && inp.files[0]; if (!f) return;
+      var f = pickedFile(inp); if (!f) return;
       rb.hidden = true; msg.textContent = '불러오는 중…';
       PKG.importZip(f, function (i, n) { msg.textContent = '불러오는 중… ' + Math.round(i / n * 100) + '%'; })
         .then(function () { return PKG.ready(); })
