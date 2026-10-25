@@ -409,7 +409,7 @@ function artCard(X, spans, edgeC) {
 }
 function openCompare(id, only) {
   const n = N[id];
-  const links = adj[id].filter(([m, c]) => !only || c === only).map(([m, c]) => [N[m], c]).sort((a, b) => LV[a[0].law] - LV[b[0].law] || ord(a[0]) - ord(b[0]));
+  const links = adj[id].filter(([m, c]) => !only || c === only || m === only).map(([m, c]) => [N[m], c]).sort((a, b) => LV[a[0].law] - LV[b[0].law] || ord(a[0]) - ord(b[0]));
   const leftSpans = []; links.forEach(([m, c]) => leftSpans.push(...marksFor(n, m, c)));
   document.getElementById("cl").innerHTML = `<div class="colt">선택한 조문</div>` + artCard(n, leftSpans);
   document.getElementById("cr").innerHTML = `<div class="colt">연결된 조문 ${links.length}개</div>` + links.map(([m, c]) => artCard(m, marksFor(m, n, c), c)).join("");

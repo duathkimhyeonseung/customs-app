@@ -612,17 +612,13 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .pvz { position: absolute; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 4px; }
 .pvz:active { background: rgba(31,111,178,.16); }
 .pvz.agr { border-bottom: 2px solid rgba(31,111,178,.55); }
+.pvz.cmp { border-bottom: 2px dotted rgba(122,61,184,.6); }
 .pvhit.keep { animation: none; background: rgba(255,214,0,.42); }
 .pvhit { position: absolute; background: rgba(255,214,0,.38); border-radius: 3px; pointer-events: none; animation: pvhit 2.4s ease-out 1 forwards; }
 @keyframes pvhit { 0%, 70% { opacity: 1; } 100% { opacity: .35; } }
 .pvbadge { position: absolute; right: 14px; bottom: 12px; padding: 4px 11px; border-radius: 999px; background: rgba(30,30,30,.72); color: #fff; font: 600 13px/1.4 var(--font-num, sans-serif); pointer-events: none; }
 .qnav.pvq { flex: none; position: static; }
-.qnav.relq { gap: 14px; flex-wrap: wrap; padding-top: 2px; }
-.relg { display: inline-flex; align-items: center; gap: 4px; }
-.rell { font-size: 12.5px; font-weight: 700; margin-right: 2px; }
-.rel-p .rell { color: #7a3db8; } .rel-o .rell { color: #e0761a; } .rel-g .rell { color: #2e8b57; }
-.rel-p .relc { border-color: #7a3db8; color: #7a3db8; } .rel-o .relc { border-color: #e0761a; color: #c0610f; } .rel-g .relc { border-color: #2e8b57; color: #2e7d5b; }
-.relc { padding: 3px 10px; font-size: 13px; }
+
 .agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px; min-height: 0; }
 .agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
@@ -3353,17 +3349,6 @@ function tile(cls, o, onClick) {
   /* ---------- 관세평가 법령: 스캔본 ---------- */
   function renderLawScan() {
     var host = pvScreen(), nav = el('nav', 'qnav pvq'); host.parentNode.insertBefore(nav, host);
-    /* 위임·인용별 법 조문 버튼 → 원형 관계도의 원문 비교 */
-    var rel = el('nav', 'qnav pvq relq'); host.parentNode.insertBefore(rel, host);
-    [['p', '대통령령 위임', ['30', '31', '32', '33', '34', '35']], ['o', '재정경제부령 위임', ['30', '35']], ['g', '고시 인용', ['30', '31', '33', '34']]].forEach(function (g) {
-      var grp = el('span', 'relg rel-' + g[0]); grp.appendChild(el('span', 'rell', g[1]));
-      g[2].forEach(function (a) {
-        var b = el('button', 'qchip relc', '제' + a + '조'); b.type = 'button';
-        b.addEventListener('click', function () { go('v-graph', b, false, { cmp: ['L' + a + '-0', g[0]] }); });
-        grp.appendChild(b);
-      });
-      rel.appendChild(grp);
-    });
     pkgGate(host, function (M) {
       PKG.json('law.json').then(function (L) {
         var en = curEntry();
@@ -3373,6 +3358,9 @@ function tile(cls, o, onClick) {
             var h0 = z.hl && z.hl[0], at = h0 ? h0.n : z.to, atf = h0 ? Math.max(0, h0.rects[0].t - 0.08) : 0;
             go('va-sec-' + z.sec, t, false, { at: at, atf: atf, hl: z.hl || [] });
           } });
+        });
+        (L.phr || []).forEach(function (z) {
+          (LZ[z.pg] = LZ[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'cmp', title: z.k, fn: function (t) { go('v-graph', t, false, { cmp: z.cmp }); } });
         });
         var pv = PageView(host, { pages: L.pages, start: en.vs, entry: en, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; },
           zones: function (i) { return LZ[i + 1] || []; } });
