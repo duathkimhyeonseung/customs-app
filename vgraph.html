@@ -407,9 +407,9 @@ function artCard(X, spans, edgeC) {
   const tag = edgeC ? `<span class="tag ${edgeC}">${edgeC === "p" ? "대통령령" : edgeC === "g" ? "고시" : "재정경제부령"}</span>` : "";
   return `<div class="art ${X.law}"><h3>${tag}<span>${LAWFULL[X.law]} ${X.lab}(${esc(X.t)})</span></h3><div class="tx">${renderArt(G.texts[X.id] || "", spans)}</div></div>`;
 }
-function openCompare(id) {
+function openCompare(id, only) {
   const n = N[id];
-  const links = adj[id].map(([m, c]) => [N[m], c]).sort((a, b) => LV[a[0].law] - LV[b[0].law] || ord(a[0]) - ord(b[0]));
+  const links = adj[id].filter(([m, c]) => !only || c === only).map(([m, c]) => [N[m], c]).sort((a, b) => LV[a[0].law] - LV[b[0].law] || ord(a[0]) - ord(b[0]));
   const leftSpans = []; links.forEach(([m, c]) => leftSpans.push(...marksFor(n, m, c)));
   document.getElementById("cl").innerHTML = `<div class="colt">선택한 조문</div>` + artCard(n, leftSpans);
   document.getElementById("cr").innerHTML = `<div class="colt">연결된 조문 ${links.length}개</div>` + links.map(([m, c]) => artCard(m, marksFor(m, n, c), c)).join("");
@@ -419,6 +419,8 @@ function openCompare(id) {
   document.getElementById("cmpx").focus();
 }
 document.getElementById("cmpx").onclick = () => (document.getElementById("cmp").hidden = true);
+/* 앱에서 바로 원문 비교 열기 (only: p 대통령령 / o 재정경제부령 / g 고시 인용) */
+window.vgCompare = (id, only) => { if (!N[id]) return; select(id); openCompare(id, only); };
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") document.getElementById("cmp").hidden = true; });
 
 function select(id) {

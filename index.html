@@ -617,6 +617,12 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 @keyframes pvhit { 0%, 70% { opacity: 1; } 100% { opacity: .35; } }
 .pvbadge { position: absolute; right: 14px; bottom: 12px; padding: 4px 11px; border-radius: 999px; background: rgba(30,30,30,.72); color: #fff; font: 600 13px/1.4 var(--font-num, sans-serif); pointer-events: none; }
 .qnav.pvq { flex: none; position: static; }
+.qnav.relq { gap: 14px; flex-wrap: wrap; padding-top: 2px; }
+.relg { display: inline-flex; align-items: center; gap: 4px; }
+.rell { font-size: 12.5px; font-weight: 700; margin-right: 2px; }
+.rel-p .rell { color: #7a3db8; } .rel-o .rell { color: #e0761a; } .rel-g .rell { color: #2e8b57; }
+.rel-p .relc { border-color: #7a3db8; color: #7a3db8; } .rel-o .relc { border-color: #e0761a; color: #c0610f; } .rel-g .relc { border-color: #2e8b57; color: #2e7d5b; }
+.relc { padding: 3px 10px; font-size: 13px; }
 .agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px; min-height: 0; }
 .agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
@@ -1560,6 +1566,12 @@ function tile(cls, o, onClick) {
     if (id === 's-graph' || id === 'v-graph') {
       var gf = el('iframe', 'embed'); gf.title = id === 's-graph' ? '관세법 관계도' : '관세평가 관계도';
       embedDoc(gf, id === 's-graph' ? 'graphdoc' : 'vgraphdoc');
+      var cen = curEntry && curEntry();
+      if (id === 'v-graph' && cen && cen.cmp) {
+        var cmp = cen.cmp, done = false;
+        var tryOpen = function () { if (done) return; try { if (gf.contentWindow && gf.contentWindow.vgCompare) { done = true; gf.contentWindow.vgCompare(cmp[0], cmp[1]); } } catch (e) { } };
+        gf.addEventListener('load', function () { setTimeout(tryOpen, 150); }); setTimeout(tryOpen, 1200);
+      }
       page.appendChild(gf); return;
     }
     if (id === 's-hs') {
@@ -3341,6 +3353,17 @@ function tile(cls, o, onClick) {
   /* ---------- 관세평가 법령: 스캔본 ---------- */
   function renderLawScan() {
     var host = pvScreen(), nav = el('nav', 'qnav pvq'); host.parentNode.insertBefore(nav, host);
+    /* 위임·인용별 법 조문 버튼 → 원형 관계도의 원문 비교 */
+    var rel = el('nav', 'qnav pvq relq'); host.parentNode.insertBefore(rel, host);
+    [['p', '대통령령 위임', ['30', '31', '32', '33', '34', '35']], ['o', '재정경제부령 위임', ['30', '35']], ['g', '고시 인용', ['30', '31', '33', '34']]].forEach(function (g) {
+      var grp = el('span', 'relg rel-' + g[0]); grp.appendChild(el('span', 'rell', g[1]));
+      g[2].forEach(function (a) {
+        var b = el('button', 'qchip relc', '제' + a + '조'); b.type = 'button';
+        b.addEventListener('click', function () { go('v-graph', b, false, { cmp: ['L' + a + '-0', g[0]] }); });
+        grp.appendChild(b);
+      });
+      rel.appendChild(grp);
+    });
     pkgGate(host, function (M) {
       PKG.json('law.json').then(function (L) {
         var en = curEntry();
