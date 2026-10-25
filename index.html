@@ -623,6 +623,9 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .agrsecs { display: grid; grid-template-rows: repeat(6, 1fr); gap: 10px; min-height: 0; }
 .agrsec { border: 2px solid var(--line); border-radius: 14px; background: var(--box); font: inherit; font-size: 19px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .agrbook:active, .agrsec:active { background: var(--marker); }
+.pkgre { position: absolute; left: 28px; bottom: 26px; padding: 7px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--paper, #fff); font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.pkgre input { display: none; }
+.pkgremsg { position: absolute; left: 30px; bottom: 64px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
 .agrtoc { width: min(760px, 100%); background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.15); box-sizing: border-box; }
 .agrtoc h2 { margin: 0 0 8px; font-size: 18px; }
 .tocit { display: flex; width: 100%; justify-content: space-between; gap: 12px; border: 0; border-bottom: 1px dashed #ddd; background: none; font: inherit; font-size: 15px; padding: 8px 4px; text-align: left; cursor: pointer; color: #222; }
@@ -3357,6 +3360,18 @@ function tile(cls, o, onClick) {
       right.appendChild(b);
     });
     g.appendChild(left); g.appendChild(right); page.appendChild(g);
+    /* 패키지 새로 불러오기 (새 패키지 파일을 받았을 때) */
+    var rb = el('label', 'pkgre'); rb.appendChild(document.createTextNode('패키지 새로 불러오기'));
+    var inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.zip,application/zip'; rb.appendChild(inp);
+    var msg = el('span', 'pkgremsg'); page.appendChild(rb); page.appendChild(msg);
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      rb.hidden = true; msg.textContent = '불러오는 중…';
+      PKG.importZip(f, function (i, n) { msg.textContent = '불러오는 중… ' + Math.round(i / n * 100) + '%'; })
+        .then(function () { return PKG.ready(); })
+        .then(function (m) { if (!m) throw new Error('패키지 정보가 없어요'); msg.textContent = '새 패키지를 불러왔어요.'; rb.hidden = false; inp.value = ''; })
+        .catch(function (e) { msg.textContent = '불러오지 못했어요: ' + (e && e.message || e); rb.hidden = false; inp.value = ''; });
+    });
   }
 
   /* ---------- 협정 원문 영역 ---------- */
