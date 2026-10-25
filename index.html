@@ -1473,7 +1473,7 @@ function tile(cls, o, onClick) {
     secA.appendChild(nav);
   }
   function renderPage(id) {
-    page.textContent = ''; page.classList.remove('dumppg', 'pvpg'); page.classList.toggle('flush', id === 's-hs' || id === 's-graph' || id === 's-graph9' || id === 'v-graph' || id === 'v-line');
+    page.textContent = ''; page.classList.remove('dumppg', 'pvpg'); activePV = null; page.classList.toggle('flush', id === 's-hs' || id === 's-graph' || id === 's-graph9' || id === 'v-graph' || id === 'v-line');
     if (id === 'home') {
       page.appendChild(searchBox());
       var g = el('div', 'grid4');
@@ -2596,7 +2596,22 @@ function tile(cls, o, onClick) {
     if (openState) { if (openState.dual) closeDualNow(); else closeSrcNow(); return; }
     var ft = stack[stack.length - 1]; if (ft && ft.focus != null && DATA.maps[ft.id]) { if (ft.sub) exitSub(); else exitFocus(); return; }
     if (hsInnerBack()) return;
+    if (ft && ft.jumps && ft.jumps.length && activePV) { var jp = ft.jumps.pop(); activePV.goPage(jp.i, jp.f); return; }
     if (stack.length > 1) back();
+  }
+  /* 관세평가 영역: 화면 위 뒤로 버튼 = 한 단계 위 화면으로 (OS 뒤로가기는 직전 화면·직전 위치로) */
+  var UPPER = { 'va-book': 'v-agr', 'v-agr': 's-val', 'v-law': 's-val' };
+  function upperOf(id) { return /^va-sec-/.test(id) ? 'v-agr' : UPPER[id]; }
+  function uiBackUp(par) {
+    var k = -1; for (var i = stack.length - 2; i >= 0; i--) if (stack[i].id === par) { k = i; break; }
+    if (k < 0) return false;
+    var n = 0; for (var j = stack.length - 1; j > k; j--) n += 1 + ((stack[j].jumps || []).length);
+    if (n > HD) return false;
+    stack.length = k + 1;
+    var prev = stack[k], t = show(prev);
+    anim(t, prev.ox != null ? prev.ox : t.clientWidth / 2, prev.oy != null ? prev.oy : t.clientHeight / 2, false);
+    HD -= n; ignorePop = Date.now() + 800; try { history.go(-n); } catch (e) { }
+    return true;
   }
   function requestBack() {
     if (HD > 0) { try { history.back(); return; } catch (e) { } }
@@ -2619,6 +2634,8 @@ function tile(cls, o, onClick) {
     uiBack();
   });
   function uiBack() {
+    var top = stack[stack.length - 1], par = top && !openState && upperOf(top.id);
+    if (par && uiBackUp(par)) return;
     if (HD > 0) { HD--; ignorePop = Date.now() + 800; logicalBack(); try { history.back(); } catch (e) { } return; }
     logicalBack();
   }
@@ -3247,6 +3264,12 @@ function tile(cls, o, onClick) {
       var y = (b.offsetTop + (frac || 0) * b.offsetHeight) * Z - 8;
       wrap.scrollTop = Math.max(0, y); upd();
     }
+    var lastF = 0;
+    /* 화면 안에서 다른 쪽으로 이동(목차·검색·조문 버튼): 지금 위치를 기록해 두고 OS 뒤로가기로 돌아오게 */
+    function jump(i, f) {
+      if (opt.entry) { (opt.entry.jumps = opt.entry.jumps || []).push({ i: cur, f: lastF }); hpush(); }
+      goPage(i, f);
+    }
     function upd() {
       if (!wrap.clientHeight || !boxes[0] || !boxes[0].offsetHeight) return;   /* 아직 크기가 안 잡혔으면 위치 기록 안 함 */
       var mid = wrap.scrollTop / Z + wrap.clientHeight / Z * 0.35, best = 0;
@@ -3254,7 +3277,8 @@ function tile(cls, o, onClick) {
       cur = best;
       var r = rowOf(best), lab = opt.label ? opt.label(best, r) : String(best + 1);
       badge.textContent = lab; badge.hidden = !lab;
-      if (opt.onState) opt.onState({ i: cur, f: boxes[cur] ? (wrap.scrollTop / Z - boxes[cur].offsetTop) / boxes[cur].offsetHeight : 0, z: Z });
+      lastF = boxes[cur] ? (wrap.scrollTop / Z - boxes[cur].offsetTop) / boxes[cur].offsetHeight : 0;
+      if (opt.onState) opt.onState({ i: cur, f: lastF, z: Z });
     }
     var rt = 0; wrap.addEventListener('scroll', function () { cancelAnimationFrame(rt); rt = requestAnimationFrame(upd); }, { passive: true });
     /* 두 손가락 확대·축소 (보고 있던 곳 고정) */
@@ -3279,13 +3303,16 @@ function tile(cls, o, onClick) {
     if (opt.start) { var s = opt.start; pend = { i: s.i || 0, f: s.f || 0 }; cur = pend.i; if (s.z > 1) { Z = s.z; inner.style.zoom = Z; } }
     build();
     if (!pend) upd();
-    return { goPage: goPage, cur: function () { return cur; }, box: function (i) { return boxes[i]; }, wrap: wrap,
+    var api = { goPage: goPage, jump: jump, cur: function () { return cur; }, box: function (i) { return boxes[i]; }, wrap: wrap,
       flash: function (i, zs) {          /* 검색 결과 강조 */
         var b = boxes[i]; if (!b) return;
         [].forEach.call(b.querySelectorAll('.pvhit'), function (h) { h.remove(); });
         zs.forEach(function (z) { var h = el('div', 'pvhit'); h.style.left = z.l * 100 + '%'; h.style.top = z.t * 100 + '%'; h.style.width = (z.r - z.l) * 100 + '%'; h.style.height = (z.b - z.t) * 100 + '%'; b.appendChild(h); });
       } };
+    activePV = api;
+    return api;
   }
+  var activePV = null;
   function pvScreen() { page.classList.add('pvpg'); var h = el('div', 'pvhost'); page.appendChild(h); return h; }
   function curEntry() { return stack[stack.length - 1]; }
 
@@ -3295,10 +3322,10 @@ function tile(cls, o, onClick) {
     pkgGate(host, function (M) {
       PKG.json('law.json').then(function (L) {
         var en = curEntry();
-        var pv = PageView(host, { pages: L.pages, start: en.vs, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; } });
+        var pv = PageView(host, { pages: L.pages, start: en.vs, entry: en, onState: function (s) { en.vs = s; }, label: function (i) { return (i + 1) + ' / ' + L.pages.length; } });
         (L.arts || []).forEach(function (a) {
           var b = el('button', 'qchip', a.t); b.type = 'button';
-          b.addEventListener('click', function () { pv.goPage(a.page - 1, a.y || 0); });
+          b.addEventListener('click', function () { pv.jump(a.page - 1, a.y || 0); });
           nav.appendChild(b);
         });
       });
@@ -3337,17 +3364,17 @@ function tile(cls, o, onClick) {
           ((key === 'rule' ? toc.items : toc.extra) || []).forEach(function (it) {
             var b = el('button', 'tocit' + (it.lv ? ' lv1' : '')); b.type = 'button';
             b.appendChild(el('span', 't', it.t)); b.appendChild(el('span', 'p', String(it.to)));
-            b.addEventListener('click', function () { pv.goPage(it.to - sec.first, it.y || 0); });
+            b.addEventListener('click', function () { pv.jump(it.to - sec.first, it.y || 0); });
             head.appendChild(b);
           });
         }
         var zones = {};
         (toc.items || []).forEach(function (it) {
           if (key === 'rule' || !it.to) return;
-          (zones[it.pg] = zones[it.pg] || []).push({ l: it.l - 0.01, t: it.top - 0.006, r: Math.max(it.r, 0.9) + 0.01, b: it.bot + 0.006, title: it.no, fn: function () { pv.goPage(it.to - sec.first, 0); } });
+          (zones[it.pg] = zones[it.pg] || []).push({ l: it.l - 0.01, t: it.top - 0.006, r: Math.max(it.r, 0.9) + 0.01, b: it.bot + 0.006, title: it.no, fn: function () { pv.jump(it.to - sec.first, 0); } });
         });
         var start = en.vs || (en.at ? { i: en.at - sec.first, f: en.atf || 0 } : null);
-        pv = PageView(host, { pages: pages, spread: true, head: head, start: start, onState: function (s) { en.vs = s; },
+        pv = PageView(host, { pages: pages, spread: true, head: head, start: start, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + sec.first] || []; }, label: function () { return ''; } });
       });
     });
@@ -3364,11 +3391,11 @@ function tile(cls, o, onClick) {
         var en = curEntry(), pv;
         var pages = B.pages.map(function (p, i) { return { path: 'book/b' + ('000' + (i + 1)).slice(-4) + '.webp', ratio: p.r || B.ratio }; });
         var zones = {};
-        (B.toc || []).forEach(function (z) { (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'toc', fn: function () { pv.goPage(z.to - 1, 0); } }); });
+        (B.toc || []).forEach(function (z) { (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'toc', fn: function () { pv.jump(z.to - 1, 0); } }); });
         (B.links || []).forEach(function (z) {
           (zones[z.pg] = zones[z.pg] || []).push({ l: z.l, t: z.t, r: z.r, b: z.b, cls: 'agr', title: z.k, fn: function (t) { go('va-sec-' + z.sec, t, false, { at: z.to, atf: z.f || 0 }); } });
         });
-        pv = PageView(host, { pages: pages, spread: true, start: en.vs, onState: function (s) { en.vs = s; },
+        pv = PageView(host, { pages: pages, spread: true, start: en.vs, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + 1] || []; },
           label: function (i, row) { var a = row ? [].map.call(row.children, function (b) { return +b.dataset.i + 1; }) : [i + 1]; return a.join('–') + ' / ' + pages.length; } });
         /* 검색 */
@@ -3397,7 +3424,7 @@ function tile(cls, o, onClick) {
                     show(false);
                     var ws = pg.w.slice(w0, w1 + 1), z = { l: 1, t: 1, r: 0, b: 0 };
                     ws.forEach(function (w) { z.l = Math.min(z.l, w[1]); z.t = Math.min(z.t, w[2]); z.r = Math.max(z.r, w[3]); z.b = Math.max(z.b, w[4]); });
-                    pv.goPage(pi, Math.max(0, z.t - 0.15)); pv.flash(pi, [z]);
+                    pv.jump(pi, Math.max(0, z.t - 0.15)); pv.flash(pi, [z]);
                   });
                 })(pi, w0, w1);
                 res.appendChild(a);
@@ -3439,7 +3466,7 @@ function tile(cls, o, onClick) {
     var ok = st.stack.every(function (e) { return e && typeof e.id === 'string' && (e.id === 'home' || DATA.maps[e.id] || screenInfo(e.id)); });
     if (!ok || st.stack.length < 2) return false;
     try {
-      st.stack.forEach(function (e, i) { stack.push(e); if (i) hpush(); });
+      st.stack.forEach(function (e, i) { e.jumps = []; stack.push(e); if (i) hpush(); });
       var top = stack[stack.length - 1];
       show(top);
       if (top.py) { var py = top.py; requestAnimationFrame(function () { page.scrollTop = py; }); }
