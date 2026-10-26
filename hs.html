@@ -1,9 +1,11 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.term:has(.mnc){grid-template-columns:auto auto 1fr;}
-.nh .mnc { margin: 0 2px; }
 .mnc { font-weight: 800; color: #111; font-size: 1.12em; line-height: 1.45; }
 .term .tl .mnr, .mnr { color: #D0261E !important; font-weight: 800; -webkit-text-fill-color: #D0261E; }
 .mnrow { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 4px 14px 10px; font-size: 1.15em; letter-spacing: .02em; }
 .mnrow b { font-weight: 800; color: #111; } .mnrow b.gap { color: #D0261E; }
+.mnrow.nmr { padding: 2px 0 8px calc(var(--lv, 1) * 1.1em + 1.6em); }
+.mnrow .mn-r { font-size: .8em; font-weight: 500; color: #777; }
+.b.mk .mnc { margin: 0 .35em 0 .1em; }
 </style></head><body>
 <title>관세율표 한눈에</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -340,8 +342,74 @@ function hlx(t, rs, off){
 }
 var MK = /^((?:[가-힣]\.|\d{1,2}\)|[가-힣]\)|\(\d{1,2}\)|\([가-힣]\)|-)\s*)/;
 
+/* ---------- 제외규정 두문자 형식: 기존 두문자(M줄)를 각 목에 나눠 붙이고, 10개마다 나열 ---------- */
+function mnToks(m){
+  var t = m.split(' ').filter(function(x){ return x && x !== '/' && x !== '│'; }), out = [];
+  t.forEach(function(x){
+    if (/^[가-힣A-Za-z0-9]$/.test(x)) out.push(x);
+    else if (/^[가-힣]{2,}$/.test(x)) { if (m.trim().indexOf(' ') < 0) out = out.concat(x.split('')); else out.push(x); }
+  });
+  return out;
+}
+function mnBlocks(blocks){
+  var out = blocks.slice(), prevM = -1;
+  for (var i = 0; i < out.length; i++) {
+    var b = out[i]; if (!b || b[0] !== 'M') continue;
+    var cs = mnToks(b[2]); if (!cs.length) { prevM = i; continue; }
+    var items = [];
+    for (var j = i - 1; j > prevM && items.length < cs.length; j--) {
+      var q = out[j];
+      if (Array.isArray(q) && typeof q[0] === 'number' && (q[1] === 1 || q[1] === 3)) items.unshift(j); else break;
+    }
+    var lv = b[1], note = b[3], rows = [];
+    if (items.length === cs.length) {
+      items.forEach(function(j, k){ var c = out[j].slice(); c.mnc = cs[k]; out[j] = c; });
+      for (var k = 0; k < cs.length; k += 10) rows.push({ at: items[Math.min(k + 9, cs.length - 1)], cs: cs.slice(k, k + 10) });
+    } else {
+      /* 목 줄과 짝이 안 맞는 경우(문장 속 나열·정의): 앞 문단들에서 차례로 빨간색만 표시 */
+      var seq = { cs: cs, k: 0 };
+      for (var j2 = prevM + 1; j2 < i; j2++) { var q2 = out[j2]; if (Array.isArray(q2) && typeof q2[0] === 'number') { var c2 = q2.slice(); c2.mnseq = seq; out[j2] = c2; } }
+      for (var k2 = 0; k2 < cs.length; k2 += 10) rows.push({ at: i - 1, cs: cs.slice(k2, k2 + 10) });
+    }
+    out.splice(i, 1);
+    var add = rows.map(function(r, ri){ return { at: r.at, blk: ['R', lv, r.cs, ri === rows.length - 1 ? note : ''] }; });
+    for (var r = add.length - 1; r >= 0; r--) out.splice(add[r].at + 1, 0, add[r].blk);
+    i = add[add.length - 1].at + add.length; prevM = i;
+  }
+  return out;
+}
+function wrapSeq(el, seq){
+  var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n, list = [];
+  while ((n = w.nextNode())) if (!(n.parentNode.classList && (n.parentNode.classList.contains('m') || n.parentNode.classList.contains('mnc')))) list.push(n);
+  for (var a = 0; a < list.length && seq.k < seq.cs.length; a++) {
+    var node = list[a], off = 0;
+    while (seq.k < seq.cs.length) {
+      var ch = seq.cs[seq.k], x = node.nodeValue.indexOf(ch, off); if (x < 0) break;
+      var mid = node.splitText(x), rest = mid.splitText(ch.length);
+      var sp = document.createElement('span'); sp.className = 'mnr'; mid.parentNode.replaceChild(sp, mid); sp.appendChild(mid);
+      node = rest; off = 0; seq.k++;
+    }
+  }
+}
+function wrapFirst(el, ch){
+  var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n;
+  while ((n = w.nextNode())) {
+    if (n.parentNode.classList && (n.parentNode.classList.contains('m') || n.parentNode.classList.contains('mnc'))) continue;
+    var x = n.nodeValue.indexOf(ch); if (x < 0) continue;
+    var mid = n.splitText(x); mid.splitText(ch.length);
+    var sp = document.createElement('span'); sp.className = 'mnr'; mid.parentNode.replaceChild(sp, mid); sp.appendChild(mid);
+    return;
+  }
+}
+
 /* ---------- note bodies ---------- */
 function blockEl(b){
+  if (b[0] === 'R') {
+    var rw = h('div', {class:'mnrow nmr', style:'--lv:'+b[1]});
+    b[2].forEach(function(c){ rw.append(h('b', null, c)); });
+    if (b[3]) rw.append(h('span', {class:'mn-r'}, b[3]));
+    return rw;
+  }
   if (b[0] === 'K') {
     var tb = h('tbody');
     b[1].forEach(function(r){
@@ -380,9 +448,13 @@ function blockEl(b){
     var p = h('p', {class:'b mk', style:'--lv:'+Math.max(lv,1)});
     p.append(h('span', {class:'m'}, mark));
     p.insertAdjacentHTML('beforeend', fmt(hlx(rest, b[3], m ? m[1].length : 0)));
+    if (b.mnc) { wrapFirst(p, b.mnc); p.insertBefore(h('b', {class:'mnc'}, b.mnc), p.children[1] || null); }
+    if (b.mnseq) wrapSeq(p, b.mnseq);
     return p;
   }
-  return h('p', {class:'b' + (ty === 2 ? ' rm' : ''), style:'--lv:'+lv, html: fmt(hlx(text, b[3], 0))});
+  var pp = h('p', {class:'b' + (ty === 2 ? ' rm' : ''), style:'--lv:'+lv, html: fmt(hlx(text, b[3], 0))});
+  if (b.mnseq) wrapSeq(pp, b.mnseq);
+  return pp;
 }
 
 function kindName(k){ return k === 's' ? '소호주' : (k === 'd' ? '국내주' : '주'); }
@@ -509,17 +581,6 @@ function render(r, dir){
 }
 
 /* ---------- note list ---------- */
-/* 주 두문자: 주 제목에서 앞의 '제○○○○호(의)·제○류·이 류' 등을 건너뛴 첫 한글 (D.nmnov로 바꿀 수 있음) */
-function noteMn(ctx, n, rkey){
-  if (ctx.type === 'rules' || n[0] !== 'n') return null;
-  var ov = (D.nmnov || {})[rkey + ':' + n[1]], t = n[2], i = 0, m;
-  if (ov) { var j = t.indexOf(ov); return {c: ov, i: j}; }
-  var re = /^\s*(?:제\s?\d{4}(?:\.\d{2})?(?:[~·]\s?제?\d{4}(?:\.\d{2})?)*호(?:의|와|·)?|제\d+(?:[~·]\d+)*[류부](?:의)?|이\s?[류부](?:의|에서|에는)?|[“"'(\[]+)\s*/;
-  while ((m = re.exec(t.slice(i))) && m[0].length) i += m[0].length;
-  var k = t.slice(i).search(/[가-힣]/); if (k < 0) return null;
-  return {c: t.charAt(i + k), i: i + k};
-}
-function markHtml(el){ el.innerHTML = el.innerHTML.replace(/\uE020/g, '<span class="mnr">').replace(/\uE021/g, '</span>'); return el; }
 function noteList(ctx, notes, rkey){
   var state = st(rkey);
   var wrap = h('div');
@@ -530,13 +591,9 @@ function noteList(ctx, notes, rkey){
     var kcls = ctx.type === 'rules' ? 'r' : n[0];
     var title = ctx.type === 'rules' ? n[1] : n[2];
     var body = h('div', {class:'nb', id:'b-' + id, hidden:true});
-    var mk = noteMn(ctx, n, rkey); n._mk = mk;
-    var ttl = h('span', {class:'nt'}, mk && mk.i >= 0 ? title.slice(0, mk.i) + '\uE020' + title.charAt(mk.i) + '\uE021' + title.slice(mk.i + 1) : title);
-    if (mk) markHtml(ttl);
     var btn = h('button', {class:'nh', type:'button', 'aria-expanded':'false', 'aria-controls':'b-' + id},
       h('span', {class:'lab ' + kcls}, lab),
-      mk ? h('b', {class:'mnc'}, mk.c) : null,
-      ttl,
+      h('span', {class:'nt'}, title),
       svg(CHEV, 'chev'));
     var built = false;
     function setOpen(open){
@@ -544,14 +601,7 @@ function noteList(ctx, notes, rkey){
         built = true;
         body.append(h('p', {class:'meta'}, metaOf(ctx, n)));
         var blocks = ctx.type === 'rules' ? n[2] : n[3];
-        var done = !mk;
-        blocks.forEach(function(b){
-          /* 원문에서 두문자 글자가 처음 나오는 곳을 빨간색으로 */
-          if (!done && typeof b[2] === 'string' && b[0] !== 'K' && b[0] !== 'T' && b[0] !== 'M' && b[2].indexOf(mk.c) >= 0) {
-            var x = b[2].indexOf(mk.c), bb = b.slice(); bb[2] = b[2].slice(0, x) + '\uE020' + mk.c + '\uE021' + b[2].slice(x + 1);
-            body.append(markHtml(blockEl(bb))); done = true;
-          } else body.append(blockEl(b));
-        });
+        mnBlocks(blocks).forEach(function(b){ body.append(blockEl(b)); });
         var ex = ctx.type === 'rules' ? null : n[4];
         if (ex && ex.a) body.append(h('div', {class:'ann'}, h('b', null, '참고'), ex.a));
       }
@@ -594,13 +644,7 @@ function noteList(ctx, notes, rkey){
     groups.forEach(function(k){
       var name = ctx.type === 'sec' && k === 'n' ? '부 주' : kindName(k);
       if (groups.length > 1 || k !== 'n') list.append(h('div', {class:'grp'}, name));
-      var seq = [], cnt = 0;
-      function flush(){ if (!seq.length) return; var row = h('div', {class:'mnrow'}); seq.forEach(function(c){ row.append(h('b', null, c)); }); list.append(row); seq = []; cnt = 0; }
-      notes.filter(function(n){ return n[0] === k; }).forEach(function(n){
-        list.append(makeItem(n, n._i));
-        if (k === 'n' && n._mk) { seq.push(n._mk.c); cnt++; if (cnt === 10) flush(); }
-      });
-      if (k === 'n') flush();
+      notes.filter(function(n){ return n[0] === k; }).forEach(function(n){ list.append(makeItem(n, n._i)); });
     });
     wrap.append(list);
   }
