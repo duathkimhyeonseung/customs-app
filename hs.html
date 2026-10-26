@@ -682,7 +682,7 @@ function renderHome(){
     h('span', {class:'rc-b'}, h('span', {class:'rc-t'}, '관세율표 해석에 관한 통칙'), h('span', {class:'rc-s'}, '제1호 ~ 제' + D.rules.length + '호')),
     svg(GO, 'go')));
   hrow.append(h('button', {class:'mn-card', type:'button', onclick:function(){ nav('mn'); }},
-    h('span', {class:'mc-t'}, '제외 규정 암기식'), h('span', {class:'mc-s'}, MNLIST.length + '개 주')));
+    h('span', {class:'mc-t'}, '주규정 암기식'), h('span', {class:'mc-s'}, MNLIST.length + '개 주')));
   root.append(h('div', {class:'legend'},
     h('span', null, h('span', {class:'sb', style:hueVars(1)}, '1부'), '부 주 보기'),
     h('span', null, h('span', {class:'sb off', style:hueVars(3)}, '3부'), '부 주 없음'),
@@ -725,7 +725,7 @@ function renderRules(){
   return root;
 }
 
-/* ---------- 제외 규정 암기식 모아보기 ---------- */
+/* ---------- 주규정 암기식 모아보기 ---------- */
 var MNLIST = (function(){
   var out = [];
   function scan(ctx, notes, rkey, secNo){
@@ -753,11 +753,11 @@ function openNoteAt(e){
   }, 80);
 }
 function renderMn(){
-  barTitle.textContent = '제외 규정 암기식';
+  barTitle.textContent = '주규정 암기식';
   var root = h('div');
   root.append(h('div', {class:'head'},
-    h('p', {class:'eyebrow'}, '주 · 제외 규정'),
-    h('h2', {class:'h2'}, '제외 규정 암기식'),
+    h('p', {class:'eyebrow'}, '주규정'),
+    h('h2', {class:'h2'}, '주규정 암기식'),
     h('p', {class:'lead'}, '항목을 누르면 해당 주 원문으로 이동합니다.')));
   var curSec = 0, list = null;
   MNLIST.forEach(function(e){
