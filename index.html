@@ -619,9 +619,11 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .pvbadge { position: absolute; right: 14px; bottom: 12px; padding: 4px 11px; border-radius: 999px; background: rgba(30,30,30,.72); color: #fff; font: 600 13px/1.4 var(--font-num, sans-serif); pointer-events: none; }
 .qnav.pvq { flex: none; position: static; }
 
-.agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px; min-height: 0; }
+.agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 18px 70px; min-height: 0; }
 .agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
+.agrleft { display: grid; grid-template-rows: repeat(3, 1fr); gap: 14px; min-height: 0; }
+.agrleft .agrbook .nm { font-size: 28px; } .agrleft .agrbook { gap: 6px; padding: 0 12px; text-align: center; }
 .agrsecs { display: grid; grid-template-rows: repeat(6, 1fr); gap: 10px; min-height: 0; }
 .agrsec { border: 2px solid var(--line); border-radius: 14px; background: var(--box); font: inherit; font-size: 19px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .agrbook:active, .agrsec:active { background: var(--marker); }
@@ -894,7 +896,6 @@ function tile(cls, o, onClick) {
     if (o.no) b.appendChild(el('span', 'no', o.no));
     b.appendChild(el('span', 'nm', o.nm));
     var ds = el('span', 'ds', o.ds); b.appendChild(ds);
-    if (o.soon) { ds.appendChild(document.createTextNode(' ')); ds.appendChild(el('span', 'tag', '준비 중')); }
     b.addEventListener('click', function () { onClick(b); });
     return b;
   }
@@ -943,7 +944,7 @@ function tile(cls, o, onClick) {
     to._cto = setTimeout(function () { to.classList.remove('corona'); sv.remove(); }, 2700);
   }
   function emptyPage(name, note) {
-    var e = el('div', 'empty'); e.appendChild(el('span', 'tag', '준비 중')); e.appendChild(el('div', 'nm', name)); e.appendChild(el('p', null, note)); page.appendChild(e);
+    var e = el('div', 'empty'); e.appendChild(el('div', 'nm', name)); e.appendChild(el('p', null, note)); page.appendChild(e);
   }
   /* ---------- 기출문제 ---------- */
   function solBlocks(bl) {
@@ -1526,7 +1527,8 @@ function tile(cls, o, onClick) {
       page.appendChild(g4); return;
     }
     if (/^t-/.test(id)) { emptyPage(screenInfo(id).t, '아직 내용을 넣지 않았습니다.'); return; }
-    if (id === 's-val') {
+    if (id === 's-val') { renderAgrHome(true); return; }
+    if (id === 's-val-old') {
       var t3 = el('div', 'bubbles');
       [{ id: 'v-law', nm: '법령', ds: '관세법 제30조~제35조 · 시행령 · 시행규칙 · 관세평가 운영에 관한 고시' },
        { id: 'v-agr', nm: '협정', ds: 'WTO 관세평가협정 · 권고의견 · 예해 · 사례연구 (주제별)' },
@@ -2637,8 +2639,8 @@ function tile(cls, o, onClick) {
     if (stack.length > 1) back();
   }
   /* 관세평가 영역: 화면 위 뒤로 버튼 = 한 단계 위 화면으로 (OS 뒤로가기는 직전 화면·직전 위치로) */
-  var UPPER = { 'va-book': 'v-agr', 'v-agr': 's-val', 'v-law': 's-val' };
-  function upperOf(id) { return /^va-sec-/.test(id) ? 'v-agr' : UPPER[id]; }
+  var UPPER = { 'va-book': 's-val', 'v-agr': 's-val', 'v-law': 's-val', 'v-exam': 's-val' };
+  function upperOf(id) { return /^va-sec-/.test(id) ? 's-val' : UPPER[id]; }
   function uiBackUp(par) {
     var k = -1; for (var i = stack.length - 2; i >= 0; i--) if (stack[i].id === par) { k = i; break; }
     if (k < 0) return false;
@@ -3437,9 +3439,16 @@ function tile(cls, o, onClick) {
   function renderAgrHome() {
     page.classList.add('pvpg');
     var g = el('div', 'agrhome');
-    var left = el('button', 'agrbook'); left.type = 'button';
-    left.appendChild(el('span', 'nm', '교재')); left.appendChild(el('span', 'ds', '협정 교재 스캔본 · 목차 · 검색'));
-    left.addEventListener('click', function () { go('va-book', left); });
+    /* 관세평가 첫 화면: 왼쪽 법령 · 교재 · 기출 / 오른쪽 협정 원문 6개 */
+    var left = el('div', 'agrleft');
+    [['v-law', '법령', '관세법 제30조~제35조 · 시행령 · 시행규칙 · 고시'],
+     ['va-book', '교재', '협정 교재 스캔본 · 목차 · 검색'],
+     ['v-exam', '기출', '연도별 기출 · 주제별 10점 · 과거 50점']].forEach(function (o) {
+      var b = el('button', 'agrbook'); b.type = 'button';
+      b.appendChild(el('span', 'nm', o[1])); b.appendChild(el('span', 'ds', o[2]));
+      b.addEventListener('click', function () { go(o[0], b); });
+      left.appendChild(b);
+    });
     var right = el('div', 'agrsecs');
     AGR_SECS.forEach(function (s) {
       var b = el('button', 'agrsec'); b.type = 'button'; b.appendChild(el('span', 'nm', s[1]));
