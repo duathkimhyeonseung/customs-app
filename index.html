@@ -624,9 +624,9 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
 .top h1 .hmsg { font-family: var(--font-num); font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-left: 10px; }
 label.hbtn { cursor: pointer; }
-.trhome { flex: 1 1 auto; display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 30px; min-height: 0; overflow-y: auto; }
+.trhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(7, minmax(62px, 1fr)); grid-auto-flow: column; gap: 10px 14px; padding: 16px 18px 20px; min-height: 0; overflow-y: auto; }
 .trhome .agrbook.trrow { flex: none; flex-direction: row; justify-content: flex-start; align-items: center; gap: 16px; min-height: 62px; padding: 0 22px; border-radius: 14px; text-align: left; }
-.trhome .trrow .nm { font-size: 21px; min-width: 10.5em; } .trhome .trrow .ds { font-size: 14.5px; }
+.trhome .trrow .nm { font-size: 21px; flex: none; } .trhome .trrow .ds { font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .trv { flex: 1 1 auto; display: grid; grid-template-columns: minmax(230px, 30%) 1fr; min-height: 0; position: relative; }
 .trv .pkgbox { grid-column: 1 / -1; }
 .trtoc { overflow-y: auto; border-right: 1.5px solid var(--line); padding: 12px 10px 40px; background: var(--leaf); }
