@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.term:has(.mnc){grid-template-columns:auto auto 1fr;}
+.nh .mnc { margin: 0 2px; }
 .mnc { font-weight: 800; color: #111; font-size: 1.12em; line-height: 1.45; }
 .term .tl .mnr, .mnr { color: #D0261E !important; font-weight: 800; -webkit-text-fill-color: #D0261E; }
 .mnrow { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 4px 14px 10px; font-size: 1.15em; letter-spacing: .02em; }
@@ -508,6 +509,17 @@ function render(r, dir){
 }
 
 /* ---------- note list ---------- */
+/* 주 두문자: 주 제목에서 앞의 '제○○○○호(의)·제○류·이 류' 등을 건너뛴 첫 한글 (D.nmnov로 바꿀 수 있음) */
+function noteMn(ctx, n, rkey){
+  if (ctx.type === 'rules' || n[0] !== 'n') return null;
+  var ov = (D.nmnov || {})[rkey + ':' + n[1]], t = n[2], i = 0, m;
+  if (ov) { var j = t.indexOf(ov); return {c: ov, i: j}; }
+  var re = /^\s*(?:제\s?\d{4}(?:\.\d{2})?(?:[~·]\s?제?\d{4}(?:\.\d{2})?)*호(?:의|와|·)?|제\d+(?:[~·]\d+)*[류부](?:의)?|이\s?[류부](?:의|에서|에는)?|[“"'(\[]+)\s*/;
+  while ((m = re.exec(t.slice(i))) && m[0].length) i += m[0].length;
+  var k = t.slice(i).search(/[가-힣]/); if (k < 0) return null;
+  return {c: t.charAt(i + k), i: i + k};
+}
+function markHtml(el){ el.innerHTML = el.innerHTML.replace(/\uE020/g, '<span class="mnr">').replace(/\uE021/g, '</span>'); return el; }
 function noteList(ctx, notes, rkey){
   var state = st(rkey);
   var wrap = h('div');
@@ -518,9 +530,13 @@ function noteList(ctx, notes, rkey){
     var kcls = ctx.type === 'rules' ? 'r' : n[0];
     var title = ctx.type === 'rules' ? n[1] : n[2];
     var body = h('div', {class:'nb', id:'b-' + id, hidden:true});
+    var mk = noteMn(ctx, n, rkey); n._mk = mk;
+    var ttl = h('span', {class:'nt'}, mk && mk.i >= 0 ? title.slice(0, mk.i) + '\uE020' + title.charAt(mk.i) + '\uE021' + title.slice(mk.i + 1) : title);
+    if (mk) markHtml(ttl);
     var btn = h('button', {class:'nh', type:'button', 'aria-expanded':'false', 'aria-controls':'b-' + id},
       h('span', {class:'lab ' + kcls}, lab),
-      h('span', {class:'nt'}, title),
+      mk ? h('b', {class:'mnc'}, mk.c) : null,
+      ttl,
       svg(CHEV, 'chev'));
     var built = false;
     function setOpen(open){
@@ -528,7 +544,14 @@ function noteList(ctx, notes, rkey){
         built = true;
         body.append(h('p', {class:'meta'}, metaOf(ctx, n)));
         var blocks = ctx.type === 'rules' ? n[2] : n[3];
-        blocks.forEach(function(b){ body.append(blockEl(b)); });
+        var done = !mk;
+        blocks.forEach(function(b){
+          /* 원문에서 두문자 글자가 처음 나오는 곳을 빨간색으로 */
+          if (!done && typeof b[2] === 'string' && b[0] !== 'K' && b[0] !== 'T' && b[0] !== 'M' && b[2].indexOf(mk.c) >= 0) {
+            var x = b[2].indexOf(mk.c), bb = b.slice(); bb[2] = b[2].slice(0, x) + '\uE020' + mk.c + '\uE021' + b[2].slice(x + 1);
+            body.append(markHtml(blockEl(bb))); done = true;
+          } else body.append(blockEl(b));
+        });
         var ex = ctx.type === 'rules' ? null : n[4];
         if (ex && ex.a) body.append(h('div', {class:'ann'}, h('b', null, '참고'), ex.a));
       }
@@ -571,7 +594,13 @@ function noteList(ctx, notes, rkey){
     groups.forEach(function(k){
       var name = ctx.type === 'sec' && k === 'n' ? '부 주' : kindName(k);
       if (groups.length > 1 || k !== 'n') list.append(h('div', {class:'grp'}, name));
-      notes.filter(function(n){ return n[0] === k; }).forEach(function(n){ list.append(makeItem(n, n._i)); });
+      var seq = [], cnt = 0;
+      function flush(){ if (!seq.length) return; var row = h('div', {class:'mnrow'}); seq.forEach(function(c){ row.append(h('b', null, c)); }); list.append(row); seq = []; cnt = 0; }
+      notes.filter(function(n){ return n[0] === k; }).forEach(function(n){
+        list.append(makeItem(n, n._i));
+        if (k === 'n' && n._mk) { seq.push(n._mk.c); cnt++; if (cnt === 10) flush(); }
+      });
+      if (k === 'n') flush();
     });
     wrap.append(list);
   }
