@@ -5,7 +5,7 @@
 .mnrow b { font-weight: 800; color: #111; } .mnrow b.gap { color: #D0261E; }
 .mnrow.nmr { padding: 2px 0 8px calc(var(--lv, 1) * 1.1em + 1.6em); }
 .mnrow .mn-r { font-size: .8em; font-weight: 500; color: #777; }
-.b.mk .mnc { margin: 0 .35em 0 .1em; }
+.b.mk .mnc { display: inline-block; text-indent: 0; margin: 0 .4em 0 .15em; padding: 0 .28em; border: 1.6px solid #111; border-radius: 4px; line-height: 1.25; font-weight: 800; color: #111; }
 </style></head><body>
 <title>관세율표 한눈에</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -448,7 +448,7 @@ function blockEl(b){
     var p = h('p', {class:'b mk', style:'--lv:'+Math.max(lv,1)});
     p.append(h('span', {class:'m'}, mark));
     p.insertAdjacentHTML('beforeend', fmt(hlx(rest, b[3], m ? m[1].length : 0)));
-    if (b.mnc) { wrapFirst(p, b.mnc); p.insertBefore(h('b', {class:'mnc'}, b.mnc), p.children[1] || null); }
+    if (b.mnc) { wrapFirst(p, b.mnc); var mkSpan = p.querySelector(':scope > .m'); p.insertBefore(h('b', {class:'mnc'}, b.mnc), mkSpan ? mkSpan.nextSibling : p.firstChild); }   /* 목 기호 바로 뒤 */
     if (b.mnseq) wrapSeq(p, b.mnseq);
     return p;
   }
