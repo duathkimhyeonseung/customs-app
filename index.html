@@ -646,6 +646,11 @@ label.hbtn { cursor: pointer; }
 .trm { font-weight: 700; margin-right: .35em; }
 .trl { display: inline-block; font-size: 13px; font-weight: 700; padding: 0 .5em; margin-right: .45em; border: 1.4px solid var(--ink); border-radius: 5px; line-height: 1.5; vertical-align: 1px; }
 .tre { color: var(--ink-soft); font-size: 14px; }
+.trcols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+.trcol { min-width: 0; }
+.trcol + .trcol { border-left: 1.5px solid var(--leaf-line); padding-left: 22px; }
+.trcol h4 { margin: 2px 0 8px; font-size: 15px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: var(--leaf); display: inline-block; }
+.trcol .trp { font-size: 15px; }
 .trp.trnote { font-size: 12.5px; font-weight: 700; color: #B4232A; margin-bottom: 4px; }
 .trp.trsub { font-weight: 800; margin-top: 12px; }
 @media (orientation: portrait) { .trv { grid-template-columns: 38% 1fr; } .trbody { padding: 14px 16px 60vh; } }
@@ -3330,13 +3335,25 @@ function tile(cls, o, onClick) {
           if (a.t) hd.appendChild(el('span', null, a.t));
           art.appendChild(hd);
           if (a.empty) art.appendChild(el('p', 'tre', '올려준 자료에 이 조문의 국문이 없어요.'));
-          (a.ps || []).forEach(function (pp) {
-            var p = el('p', 'trp lv' + pp.lv + (pp.note ? ' trnote' : '') + (pp.sub ? ' trsub' : ''));
-            if (pp.m) p.appendChild(el('b', 'trm', pp.m));
-            if (pp.lab) p.appendChild(el('span', 'trl', pp.lab));
-            p.appendChild(document.createTextNode(pp.x));
-            art.appendChild(p);
-          });
+          function paras(list, host) {
+            (list || []).forEach(function (pp) {
+              var p = el('p', 'trp lv' + pp.lv + (pp.note ? ' trnote' : '') + (pp.sub ? ' trsub' : ''));
+              if (pp.m) p.appendChild(el('b', 'trm', pp.m));
+              if (pp.lab) p.appendChild(el('span', 'trl', pp.lab));
+              p.appendChild(document.createTextNode(pp.x));
+              host.appendChild(p);
+            });
+          }
+          paras(a.ps, art);
+          if (a.cols) {   /* 인코텀즈 A/B 나란히 */
+            var cw = el('div', 'trcols');
+            a.cols.forEach(function (c) {
+              var col = el('div', 'trcol');
+              if (c) { col.appendChild(el('h4', null, c.h)); paras(c.ps, col); }
+              cw.appendChild(col);
+            });
+            art.appendChild(cw);
+          }
           body.appendChild(art);
           tb.addEventListener('click', function () { body.scrollTop = art.offsetTop - 10; });
         });
