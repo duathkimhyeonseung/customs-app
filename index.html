@@ -622,6 +622,8 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 18px 70px; min-height: 0; }
 .agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
+.top h1 .hmsg { font-family: var(--font-num); font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-left: 10px; }
+label.hbtn { cursor: pointer; }
 .trhome { flex: 1 1 auto; display: flex; flex-direction: column; gap: 10px; padding: 16px 18px 30px; min-height: 0; overflow-y: auto; }
 .trhome .agrbook.trrow { flex: none; flex-direction: row; justify-content: flex-start; align-items: center; gap: 16px; min-height: 62px; padding: 0 22px; border-radius: 14px; text-align: left; }
 .trhome .trrow .nm { font-size: 21px; min-width: 10.5em; } .trhome .trrow .ds { font-size: 14.5px; }
@@ -2520,6 +2522,18 @@ function tile(cls, o, onClick) {
       var cb = el('button', 'hbtn'); cb.type = 'button'; cb.appendChild(document.createTextNode('협정 대응표 ')); cb.appendChild(el('span', 'arr', '›'));
       cb.addEventListener('click', function () { go('v-corr', cb); });
       vt.appendChild(cb);
+    }
+    if (id === 't-agr') {   /* 무역협정 파일 올리기 (기존 것에 더해짐) */
+      var ub = el('label', 'hbtn'); ub.appendChild(document.createTextNode('업로드'));
+      var ui = document.createElement('input'); ui.type = 'file'; ui.hidden = true; ub.appendChild(ui);
+      var um = el('span', 'hmsg'); vt.appendChild(ub); vt.appendChild(um);
+      ui.addEventListener('change', function () {
+        var f = pickedFile(ui); if (!f) return;
+        um.textContent = '불러오는 중…';
+        PKG.importZip(f).then(function () { return PKG.json('trade/trade.json'); })
+          .then(function (D) { um.textContent = D ? '불러왔어요' : '무역협정 파일이 아니에요'; ui.value = ''; })
+          .catch(function (e) { um.textContent = '불러오지 못했어요: ' + (e && e.message || e); ui.value = ''; });
+      });
     }
     backBtn.hidden = stack.length < 2; ctl.hidden = !isMap;
     ctl.querySelector('.legend').hidden = id === 'm-law' || id === 'm-rf';
