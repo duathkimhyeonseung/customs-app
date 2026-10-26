@@ -108,6 +108,19 @@ button{font:inherit;color:inherit;}
 .spk .tw.t4{top:96%;left:93%;animation-delay:.35s;width:22px;height:22px;margin:-11px 0 0 -11px;}
 @media (prefers-reduced-motion:reduce){.spk::after,.spk .tw{animation-duration:6s;}}
 
+.hrow{display:flex;gap:12px;align-items:stretch;}
+.hrow .rules-card{flex:3 1 0;width:auto;min-width:0;}
+.mn-card{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.2rem;padding:.8rem .6rem;
+  border:2px solid #C9B6FF;border-radius:18px;background:#fff;color:#1E1838;cursor:pointer;text-align:center;box-shadow:0 2px 12px rgba(150,110,255,.28);}
+.mn-card .mc-t{font-weight:800;font-size:1rem;line-height:1.3;word-break:keep-all;}
+.mn-card .mc-s{font-size:.8rem;color:#4A3F6B;}
+.mnl-sec{margin:1.2rem 2px .45rem;font-size:.82rem;font-weight:700;color:var(--muted);}
+.mnl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;}
+.mnl-it{display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:.6rem .7rem .3rem;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fff);color:var(--fg);text-align:left;cursor:pointer;font:inherit;}
+.mnl-h{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;font-size:.82rem;}
+.mnl-w{font-weight:700;}
+.mnl-t{color:var(--muted);flex-basis:100%;font-size:.8rem;line-height:1.35;}
+.mnl-it .mnrow{padding:4px 0 6px;}
 .rules-card .rc-k{flex:none;display:grid;place-items:center;width:3.3rem;height:3.3rem;border-radius:14px;background:var(--p5s);color:var(--p5i);
   font-family:var(--font-display);font-size:1.15rem;}
 .rules-card .rc-b{flex:1;min-width:0;}
@@ -487,7 +500,7 @@ var stack = [];
 var canHist = false; /* 앱 안에서는 브라우저 기록을 쓰지 않고 자체 스택으로 이동 */
 
 function valid(r){
-  if (r === '' || r === 'rules') return true;
+  if (r === '' || r === 'rules' || r === 'mn') return true;
   var m = /^([sc])(\d{1,2})$/.exec(r);
   if (!m) return false;
   var n = +m[2];
@@ -568,6 +581,7 @@ function render(r, dir){
   var node;
   if (r === '') node = renderHome();
   else if (r === 'rules') node = renderRules();
+  else if (r === 'mn') node = renderMn();
   else if (r[0] === 's') node = renderSection(+r.slice(1));
   else node = renderChapter(+r.slice(1));
   view.append(node);
@@ -660,11 +674,15 @@ function renderHome(){
     h('p', {class:'eyebrow'}, '관세법 별표 · 2022. 12. 31. 개정'),
     h('h1', {class:'h1'}, '관세율표'),
     h('p', {class:'h-sub'}, '통칙 ' + D.rules.length + '개 호 · ' + D.secs.length + '개 부 · ' + D.chs.length + '개 류')));
-  root.append(h('button', {class:'rules-card spk', type:'button', onclick:function(){ nav('rules'); }},
+  var hrow = h('div', {class:'hrow'});
+  root.append(hrow);
+  hrow.append(h('button', {class:'rules-card spk', type:'button', onclick:function(){ nav('rules'); }},
     [1,2,3,4].map(function(n){ var e = h('i',{class:'tw t'+n,'aria-hidden':'true'}); twInit(e); return e; }),
     h('span', {class:'rc-k'}, '통칙'),
     h('span', {class:'rc-b'}, h('span', {class:'rc-t'}, '관세율표 해석에 관한 통칙'), h('span', {class:'rc-s'}, '제1호 ~ 제' + D.rules.length + '호')),
     svg(GO, 'go')));
+  hrow.append(h('button', {class:'mn-card', type:'button', onclick:function(){ nav('mn'); }},
+    h('span', {class:'mc-t'}, '제외 규정 암기식'), h('span', {class:'mc-s'}, MNLIST.length + '개 주')));
   root.append(h('div', {class:'legend'},
     h('span', null, h('span', {class:'sb', style:hueVars(1)}, '1부'), '부 주 보기'),
     h('span', null, h('span', {class:'sb off', style:hueVars(3)}, '3부'), '부 주 없음'),
@@ -704,6 +722,63 @@ function renderRules(){
     h('h2', {class:'h2'}, '관세율표 해석에 관한 통칙'),
     h('p', {class:'lead'}, D.intro)));
   root.append(noteList({type:'rules'}, D.rules, 'rules'));
+  return root;
+}
+
+/* ---------- 제외 규정 암기식 모아보기 ---------- */
+var MNLIST = (function(){
+  var out = [];
+  function scan(ctx, notes, rkey, secNo){
+    notes.forEach(function(n, i){
+      var rows = (n[3] || []).filter(function(b){ return b && b[0] === 'M'; });
+      if (!rows.length) return;
+      out.push({ctx:ctx, n:n, id:rkey + '-' + i, rkey:rkey, sec:secNo,
+        rows: rows.map(function(b){ var t = mnToks(b[2]); return {cs: t.length ? t : [b[2]], note: b[3] || ''}; })});
+    });
+  }
+  D.secs.forEach(function(sv){
+    var sno = sv[0], s = SEC.get(sno);
+    scan({type:'sec', no:sno}, s.notes, 's' + sno, sno);
+    s.chs.forEach(function(cn){ var c = CH.get(cn); if (c && cn !== 77) scan({type:'ch', no:cn}, c.notes, 'c' + cn, sno); });
+  });
+  return out;
+})();
+function openNoteAt(e){
+  var sv = st(e.rkey); sv.open[e.id] = 1; if (e.ctx.type === 'ch') sv.notes = true;
+  nav(e.rkey);
+  setTimeout(function(){
+    var b = document.getElementById('b-' + e.id);
+    if (b && b.parentNode) b.parentNode.scrollIntoView({block:'start'});
+    window.scrollBy(0, -64);
+  }, 80);
+}
+function renderMn(){
+  barTitle.textContent = '제외 규정 암기식';
+  var root = h('div');
+  root.append(h('div', {class:'head'},
+    h('p', {class:'eyebrow'}, '주 · 제외 규정'),
+    h('h2', {class:'h2'}, '제외 규정 암기식'),
+    h('p', {class:'lead'}, '항목을 누르면 해당 주 원문으로 이동합니다.')));
+  var curSec = 0, list = null;
+  MNLIST.forEach(function(e){
+    if (e.sec !== curSec) {
+      curSec = e.sec;
+      root.append(h('p', {class:'mnl-sec', style:hueVars(e.sec)}, '제' + e.sec + '부 ' + SEC.get(e.sec).title));
+      list = h('div', {class:'mnl'}); root.append(list);
+    }
+    var head = e.ctx.type === 'sec' ? '제' + e.ctx.no + '부 주' : '제' + e.ctx.no + '류 ' + CH.get(e.ctx.no).short;
+    var it = h('button', {class:'mnl-it', type:'button', style:hueVars(e.sec), onclick:function(){ openNoteAt(e); }},
+      h('span', {class:'mnl-h'}, h('span', {class:'lab ' + e.n[0]}, labelOf(e.ctx, e.n)), h('span', {class:'mnl-w'}, head), h('span', {class:'mnl-t'}, e.n[2])));
+    e.rows.forEach(function(r){
+      for (var k = 0; k < r.cs.length; k += 10) {
+        var rw = h('span', {class:'mnrow'});
+        r.cs.slice(k, k + 10).forEach(function(c){ rw.append(h('b', null, c)); });
+        if (r.note && k + 10 >= r.cs.length) rw.append(h('span', {class:'mn-r'}, r.note));
+        it.append(rw);
+      }
+    });
+    list.append(it);
+  });
   return root;
 }
 
