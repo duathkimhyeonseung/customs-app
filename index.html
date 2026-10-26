@@ -622,6 +622,28 @@ p.tl { padding-left: 1.6em; font-size: .95em; color: var(--ink-soft); }
 .agrhome { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 18px 18px 70px; min-height: 0; }
 .agrbook { border: 2px solid var(--line); border-radius: 20px; background: var(--box); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; font: inherit; color: var(--ink); }
 .agrbook .nm { font-size: 34px; font-weight: 700; } .agrbook .ds { font-size: 15px; color: var(--ink-soft); }
+.trhome { flex: 1 1 auto; display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: 18px; padding: 18px; min-height: 0; }
+.trhome .agrbook .nm { font-size: 30px; } .trhome .agrbook { padding: 0 14px; text-align: center; }
+.trv { flex: 1 1 auto; display: grid; grid-template-columns: minmax(230px, 30%) 1fr; min-height: 0; position: relative; }
+.trv .pkgbox { grid-column: 1 / -1; }
+.trtoc { overflow-y: auto; border-right: 1.5px solid var(--line); padding: 12px 10px 40px; background: var(--leaf); }
+.trfull { font-size: 13px; font-weight: 700; color: var(--ink-soft); padding: 2px 8px 8px; }
+.trg { font-size: 13px; font-weight: 800; color: var(--ink); padding: 14px 8px 4px; border-top: 1px solid var(--leaf-line); margin-top: 6px; }
+.trti { display: flex; gap: 7px; align-items: baseline; width: 100%; text-align: left; border: 0; background: none; padding: 6px 8px; border-radius: 8px; font: inherit; font-size: 14.5px; color: var(--ink); cursor: pointer; line-height: 1.35; }
+.trti b { flex: none; font-weight: 700; min-width: 3.6em; font-variant-numeric: tabular-nums; }
+.trti:active { background: var(--marker); }
+.trbody { overflow-y: auto; padding: 18px 28px 60vh; background: #fff; }
+.trh1 { font-size: 20px; margin: 0 0 10px; }
+.trgh { font-size: 15px; font-weight: 800; color: var(--ink-soft); margin: 26px 0 4px; padding-bottom: 6px; border-bottom: 1.5px solid var(--line); }
+.tra { padding: 14px 0 12px; border-bottom: 1px solid var(--leaf-line); }
+.trah { display: flex; gap: 10px; align-items: baseline; font-size: 18px; margin: 0 0 8px; }
+.trah b { font-weight: 800; }
+.trp { margin: 0 0 7px; font-size: 16px; line-height: 1.75; word-break: keep-all; overflow-wrap: anywhere; }
+.trp.lv1 { padding-left: 1.6em; } .trp.lv2 { padding-left: 3.2em; }
+.trm { font-weight: 700; margin-right: .35em; }
+.trl { display: inline-block; font-size: 13px; font-weight: 700; padding: 0 .5em; margin-right: .45em; border: 1.4px solid var(--ink); border-radius: 5px; line-height: 1.5; vertical-align: 1px; }
+.tre { color: var(--ink-soft); font-size: 14px; }
+@media (orientation: portrait) { .trv { grid-template-columns: 38% 1fr; } .trbody { padding: 14px 16px 60vh; } }
 .agrleft { display: grid; grid-template-rows: repeat(3, 1fr); gap: 14px; min-height: 0; }
 .agrleft .agrbook .nm { font-size: 28px; } .agrleft .agrbook { gap: 6px; padding: 0 12px; text-align: center; }
 .agrsecs { display: grid; grid-template-rows: repeat(6, 1fr); gap: 10px; min-height: 0; }
@@ -838,12 +860,16 @@ body { height: 100dvh; }
   var READY = { 'v-law': 1, 'v-agr': 1, 'soon-dump': 1, 'cv-home': 1 };
   var SOON = { 'soon-dump': ['덤핑방지관세·상계관세', '관세법 제51조~제62조'], 'soon-gm': ['감면', '관세법 제4장 제1절'], 'soon-c11': ['제11장 벌칙', '관세법 제268조의2~제282조'] };
   function isReady(id) { return !!(DATA.maps[id] || (DATA.pages && DATA.pages[id]) || READY[id]); }
+  var TRADE_LIST = [['inc', 'Incoterms 2020', '인코텀즈 2020'], ['ucp', 'UCP 600', '신용장통일규칙 (2007년 개정)'], ['urc', 'URC 522', '추심에 관한 통일규칙'],
+    ['cisg', 'CISG', '국제물품매매계약에 관한 국제연합 협약'], ['mia', 'MIA 1906', '영국 해상보험법 (1906)']];
   function screenInfo(id) {
     if (id === 'home') return { t: '관세사', sub: '2차 과목' };
     if (id === 's-law') return { t: '관세법', sub: '관세법 · 환급특례법' };
     if (id === 's-refund') return { t: '환특법', sub: '수출용원재료에 대한 관세 등 환급에 관한 특례법' };
     var TR = { 't-theory': ['이론', '무역계약 · 결제 · 운송 · 보험'], 't-agr': ['협정', '국제협약 · 통일규칙'], 't-fx': ['외국환거래법', '외국환거래법 · 시행령 · 규정'], 't-ft': ['대외무역법', '대외무역법 · 시행령 · 관리규정'] };
     if (TR[id]) return { t: TR[id][0], sub: '무역실무' };
+    var trx = /^tr-(\w+)$/.exec(id);
+    if (trx) { var tro = TRADE_LIST.filter(function (o) { return o[0] === trx[1]; })[0]; if (tro) return { t: tro[1], sub: tro[2] }; }
     if (id === 'dump-dc') return { t: '덤핑방지관세 / 상계관세 차이', sub: '관세법 제51조~제62조' };
     if (id === 'dump-u') return { t: '우회덤핑 덤핑방지관세', sub: '관세법 제56조의2 · 영 제71조의2~제71조의11' };
     if (id === 's-graph') return { t: '관세법 관계도', sub: '법 · 시행령 · 시행규칙 위임 관계' };
@@ -1526,6 +1552,9 @@ function tile(cls, o, onClick) {
       });
       page.appendChild(g4); return;
     }
+    if (id === 't-agr') { renderTradeHome(); return; }
+    var trm = /^tr-(\w+)$/.exec(id);
+    if (trm) { renderTrade(trm[1]); return; }
     if (/^t-/.test(id)) { emptyPage(screenInfo(id).t, '아직 내용을 넣지 않았습니다.'); return; }
     if (id === 's-val') { renderAgrHome(true); return; }
     if (id === 's-val-old') {
@@ -2639,7 +2668,7 @@ function tile(cls, o, onClick) {
     if (stack.length > 1) back();
   }
   /* 관세평가 영역: 화면 위 뒤로 버튼 = 한 단계 위 화면으로 (OS 뒤로가기는 직전 화면·직전 위치로) */
-  var UPPER = { 'va-book': 's-val', 'v-agr': 's-val', 'v-law': 's-val', 'v-exam': 's-val' };
+  var UPPER = { 'tr-inc': 't-agr', 'tr-ucp': 't-agr', 'tr-urc': 't-agr', 'tr-cisg': 't-agr', 'tr-mia': 't-agr', 'va-book': 's-val', 'v-agr': 's-val', 'v-law': 's-val', 'v-exam': 's-val' };
   function upperOf(id) { return /^va-sec-/.test(id) ? 's-val' : UPPER[id]; }
   function uiBackUp(par) {
     var k = -1; for (var i = stack.length - 2; i >= 0; i--) if (stack[i].id === par) { k = i; break; }
@@ -3205,7 +3234,9 @@ function tile(cls, o, onClick) {
           p += 46 + nl + xl + cl;
         }
         function type(n) { return /\.webp$/.test(n) ? 'image/webp' : /\.jpe?g$/.test(n) ? 'image/jpeg' : /\.png$/.test(n) ? 'image/png' : 'application/json'; }
-        return clear().then(function () {
+        /* pkg.json이 든 전체 패키지면 비우고 새로, 아니면(무역협정 등 추가 파일) 기존 것에 더하기 */
+        var full = ents.some(function (en) { return en.name === 'pkg.json'; });
+        return (full ? clear() : Promise.resolve()).then(function () {
           var i = 0;
           function next() {
             if (i >= ents.length) return Promise.resolve();
@@ -3219,6 +3250,81 @@ function tile(cls, o, onClick) {
     }
     return { get: get, json: json, url: url, ready: ready, importZip: importZip };
   })();
+
+  /* ================= 무역실무 협정 (국문) =================
+     원문 번역문은 공개 사이트에 올리지 않고, 기기 안 패키지(trade/trade.json)에서 읽음 */
+  function tradeGate(host, onReady) {
+    PKG.json('trade/trade.json').catch(function () { return null; }).then(function (D) {
+      if (D) { onReady(D); return; }
+      var box = el('div', 'pkgbox');
+      box.appendChild(el('h2', null, '무역협정 파일 불러오기'));
+      box.appendChild(el('p', null, '협정 국문은 이 기기 안에만 저장돼요. 받은 무역협정 파일(.zip)을 한 번만 골라 주세요. 관세평가 패키지는 그대로 남아요.'));
+      var lab = el('label', 'pkgbtn'); lab.appendChild(document.createTextNode('파일 고르기'));
+      var inp = document.createElement('input'); inp.type = 'file'; lab.appendChild(inp);
+      var st = el('p', 'pkgst'); box.appendChild(lab); box.appendChild(st); host.appendChild(box);
+      inp.addEventListener('change', function () {
+        var f = pickedFile(inp); if (!f) return;
+        lab.hidden = true; st.textContent = '불러오는 중…';
+        PKG.importZip(f).then(function () { return PKG.json('trade/trade.json'); })
+          .then(function (D2) { if (!D2) throw new Error('무역협정 파일이 아니에요'); box.remove(); onReady(D2); })
+          .catch(function (e) { st.textContent = '불러오지 못했어요: ' + (e && e.message || e); lab.hidden = false; inp.value = ''; });
+      });
+    });
+  }
+  function renderTradeHome() {
+    page.classList.add('pvpg');
+    var g = el('div', 'trhome');
+    TRADE_LIST.forEach(function (o) {
+      var b = el('button', 'agrbook'); b.type = 'button';
+      b.appendChild(el('span', 'nm', o[1])); b.appendChild(el('span', 'ds', o[2]));
+      b.addEventListener('click', function () { go('tr-' + o[0], b); });
+      g.appendChild(b);
+    });
+    page.appendChild(g);
+  }
+  function renderTrade(key) {
+    if (key === 'inc') { emptyPage('Incoterms 2020', ''); return; }
+    page.classList.add('pvpg');
+    var wrap = el('div', 'trv'); page.appendChild(wrap);
+    tradeGate(wrap, function (D) {
+      var doc = D.list.filter(function (x) { return x.id === key; })[0]; if (!doc) return;
+      var en = curEntry();
+      var toc = el('nav', 'trtoc'), body = el('div', 'trbody'), map = {};
+      toc.appendChild(el('div', 'trfull', doc.full));
+      body.appendChild(el('h1', 'trh1', doc.full));
+      function artName(a) { return a.no ? '제' + a.no + '조' : ''; }
+      doc.groups.forEach(function (g, gi) {
+        if (g.h) { toc.appendChild(el('div', 'trg', g.h)); body.appendChild(el('h2', 'trgh', g.h)); }
+        g.arts.forEach(function (a, ai) {
+          var key2 = gi + '-' + ai;
+          var tb = el('button', 'trti'); tb.type = 'button';
+          if (a.no) tb.appendChild(el('b', null, artName(a)));
+          tb.appendChild(el('span', null, a.t || ''));
+          toc.appendChild(tb);
+          var art = el('section', 'tra'); map[key2] = art;
+          var hd = el('h3', 'trah');
+          if (a.no) hd.appendChild(el('b', null, artName(a)));
+          if (a.t) hd.appendChild(el('span', null, a.t));
+          art.appendChild(hd);
+          if (a.empty) art.appendChild(el('p', 'tre', '올려준 자료에 이 조문의 국문이 없어요.'));
+          (a.ps || []).forEach(function (pp) {
+            var p = el('p', 'trp lv' + pp.lv);
+            if (pp.m) p.appendChild(el('b', 'trm', pp.m));
+            if (pp.lab) p.appendChild(el('span', 'trl', pp.lab));
+            p.appendChild(document.createTextNode(pp.x));
+            art.appendChild(p);
+          });
+          body.appendChild(art);
+          tb.addEventListener('click', function () { body.scrollTop = art.offsetTop - 10; });
+        });
+      });
+      wrap.appendChild(toc); wrap.appendChild(body);
+      if (en.trs) body.scrollTop = en.trs;
+      if (en.trt) toc.scrollTop = en.trt;
+      body.addEventListener('scroll', function () { en.trs = body.scrollTop; }, { passive: true });
+      toc.addEventListener('scroll', function () { en.trt = toc.scrollTop; }, { passive: true });
+    });
+  }
 
   /* 여러 조각(…part1, part2 …)을 한꺼번에 고르면 이름 순서대로 이어 붙여 하나로 */
   function pickedFile(inp) {
