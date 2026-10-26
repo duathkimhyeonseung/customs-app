@@ -861,7 +861,7 @@ body { height: 100dvh; }
   var SOON = { 'soon-dump': ['덤핑방지관세·상계관세', '관세법 제51조~제62조'], 'soon-gm': ['감면', '관세법 제4장 제1절'], 'soon-c11': ['제11장 벌칙', '관세법 제268조의2~제282조'] };
   function isReady(id) { return !!(DATA.maps[id] || (DATA.pages && DATA.pages[id]) || READY[id]); }
   var TRADE_LIST = [['inc', 'Incoterms 2020', '인코텀즈 2020'], ['ucp', 'UCP 600', '신용장통일규칙 (2007년 개정)'], ['urc', 'URC 522', '추심에 관한 통일규칙'],
-    ['cisg', 'CISG', '국제물품매매계약에 관한 국제연합 협약'], ['mia', 'MIA 1906', '영국 해상보험법 (1906)']];
+    ['cisg', 'CISG', '국제물품매매계약에 관한 국제연합 협약'], ['mia', 'MIA 1906', '영국 해상보험법 (1906)'], ['icc', 'ICC 2009', '협회적하약관 (2009)']];
   function screenInfo(id) {
     if (id === 'home') return { t: '관세사', sub: '2차 과목' };
     if (id === 's-law') return { t: '관세법', sub: '관세법 · 환급특례법' };
@@ -2668,7 +2668,7 @@ function tile(cls, o, onClick) {
     if (stack.length > 1) back();
   }
   /* 관세평가 영역: 화면 위 뒤로 버튼 = 한 단계 위 화면으로 (OS 뒤로가기는 직전 화면·직전 위치로) */
-  var UPPER = { 'tr-inc': 't-agr', 'tr-ucp': 't-agr', 'tr-urc': 't-agr', 'tr-cisg': 't-agr', 'tr-mia': 't-agr', 'va-book': 's-val', 'v-agr': 's-val', 'v-law': 's-val', 'v-exam': 's-val' };
+  var UPPER = { 'tr-inc': 't-agr', 'tr-ucp': 't-agr', 'tr-urc': 't-agr', 'tr-cisg': 't-agr', 'tr-mia': 't-agr', 'tr-icc': 't-agr', 'va-book': 's-val', 'v-agr': 's-val', 'v-law': 's-val', 'v-exam': 's-val' };
   function upperOf(id) { return /^va-sec-/.test(id) ? 's-val' : UPPER[id]; }
   function uiBackUp(par) {
     var k = -1; for (var i = stack.length - 2; i >= 0; i--) if (stack[i].id === par) { k = i; break; }
@@ -3283,7 +3283,7 @@ function tile(cls, o, onClick) {
     page.appendChild(g);
   }
   function renderTrade(key) {
-    if (key === 'inc') { emptyPage('Incoterms 2020', ''); return; }
+    if (key === 'inc' || key === 'icc') { emptyPage(screenInfo('tr-' + key).t, ''); return; }   /* 버튼만, 내용 없음 */
     page.classList.add('pvpg');
     var wrap = el('div', 'trv'); page.appendChild(wrap);
     tradeGate(wrap, function (D) {
