@@ -651,6 +651,13 @@ label.hbtn { cursor: pointer; }
 .trcol + .trcol { border-left: 1.5px solid var(--leaf-line); padding-left: 22px; }
 .trcol h4 { margin: 2px 0 8px; font-size: 15px; font-weight: 800; padding: 4px 10px; border-radius: 8px; background: var(--leaf); display: inline-block; }
 .trcol .trp { font-size: 15px; }
+mark.hl { background: #FFF27A; color: inherit; padding: 1px 0; border-radius: 2px; }
+.hstar { color: #D0261E; font-weight: 900; margin: 0 1px; }
+.hsl { color: #D0261E; font-style: normal; font-weight: 700; margin: 0 2px; }
+.hnum { color: #D0261E; font-weight: 800; margin-right: 1px; }
+.hnote { color: #2F55C8; font-weight: 700; font-size: 11px; margin-right: 2px; }
+.hmemo { margin: -2px 0 10px 1.6em; padding: 7px 12px; border-left: 3px solid #2F55C8; background: #F3F6FF; color: #22408F; font-size: 14px; line-height: 1.6; border-radius: 0 8px 8px 0; }
+.hmemo div:first-child { font-weight: 800; }
 .trp.trnote { font-size: 12.5px; font-weight: 700; color: #B4232A; margin-bottom: 4px; }
 .trp.trsub { font-weight: 800; margin-top: 12px; }
 @media (orientation: portrait) { .trv { grid-template-columns: 38% 1fr; } .trbody { padding: 14px 16px 60vh; } }
@@ -3340,8 +3347,17 @@ function tile(cls, o, onClick) {
               var p = el('p', 'trp lv' + pp.lv + (pp.note ? ' trnote' : '') + (pp.sub ? ' trsub' : ''));
               if (pp.m) p.appendChild(el('b', 'trm', pp.m));
               if (pp.lab) p.appendChild(el('span', 'trl', pp.lab));
-              p.appendChild(document.createTextNode(pp.x));
+              if (pp.hx) {   /* 교재 필기: «형광펜» ★별표 |사선 ①번호 ⟨덧붙임⟩ */
+                var sp = document.createElement('span');
+                sp.innerHTML = pp.hx.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                  .replace(/⟨([^⟩]*)⟩/g, '<sup class="hnote">$1</sup>')
+                  .replace(/«/g, '<mark class="hl">').replace(/»/g, '</mark>')
+                  .replace(/★/g, '<b class="hstar">★</b>').replace(/\|/g, '<i class="hsl">/</i>')
+                  .replace(/([①②③④⑤])/g, '<b class="hnum">$1</b>');
+                p.appendChild(sp);
+              } else p.appendChild(document.createTextNode(pp.x));
               host.appendChild(p);
+              if (pp.memo) { var mm = el('div', 'hmemo'); pp.memo.forEach(function (t) { mm.appendChild(el('div', null, t)); }); host.appendChild(mm); }
             });
           }
           paras(a.ps, art);
