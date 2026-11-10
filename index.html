@@ -2538,6 +2538,12 @@ function tile(cls, o, onClick) {
       cb.addEventListener('click', function () { go('v-corr', cb); });
       vt.appendChild(cb);
     }
+    tocFn = null;
+    if (id === 'va-book' || /^va-sec-/.test(id)) {   /* 교재·협정 원문: 목차로 바로 가기 */
+      var tb = el('button', 'hbtn', '목차'); tb.type = 'button';
+      tb.addEventListener('click', function () { if (tocFn) tocFn(); });
+      vt.appendChild(tb);
+    }
     if (id === 't-agr') {   /* 무역협정 파일 올리기 (기존 것에 더해짐) */
       var ub = el('label', 'hbtn'); ub.appendChild(document.createTextNode('업로드'));
       var ui = document.createElement('input'); ui.type = 'file'; ui.hidden = true; ub.appendChild(ui);
@@ -3514,7 +3520,8 @@ function tile(cls, o, onClick) {
     if (opt.start) { var s = opt.start; pend = { i: s.i || 0, f: s.f || 0 }; cur = pend.i; if (s.z > 1) { Z = s.z; inner.style.zoom = Z; } }
     build();
     if (!pend) upd();
-    var api = { goPage: goPage, jump: jump, cur: function () { return cur; }, box: function (i) { return boxes[i]; }, wrap: wrap,
+    var api = { goPage: goPage, jump: jump, cur: function () { return cur; },
+      top: function () { if (opt.entry) { (opt.entry.jumps = opt.entry.jumps || []).push({ i: cur, f: lastF }); hpush(); } wrap.scrollTop = 0; upd(); }, box: function (i) { return boxes[i]; }, wrap: wrap,
       flash: function (i, zs, keep) {    /* 검색 결과 강조 (keep: 법령집에서 넘어온 인용 부분 — 계속 표시) */
         var b = boxes[i]; if (!b) return;
         if (!keep) [].forEach.call(b.querySelectorAll('.pvhit:not(.keep)'), function (h) { h.remove(); });
@@ -3635,6 +3642,7 @@ function tile(cls, o, onClick) {
   }
 
   /* ---------- 협정 원문 영역 ---------- */
+  var tocFn = null;   /* 위쪽 [목차] 버튼이 부르는 함수 (화면마다 바뀜) */
   function renderAgrSec(key) {
     var host = pvScreen();
     pkgGate(host, function () {
@@ -3661,6 +3669,12 @@ function tile(cls, o, onClick) {
         var start = en.vs || (en.at ? { i: en.at - sec.first, f: en.atf || 0 } : null);
         pv = PageView(host, { pages: pages, spread: true, head: head, start: start, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + sec.first] || []; }, label: function () { return ''; } });
+        var tocPgs = (toc.items || []).filter(function (it) { return it.pg; }).map(function (it) { return it.pg; });
+        tocFn = function () {
+          if (head) pv.top();
+          else if (tocPgs.length) pv.jump(Math.min.apply(null, tocPgs) - sec.first, 0);
+          else pv.top();
+        };
         /* 법령집에서 넘어왔으면 법령집에 실린 부분을 원문에서 강조 */
         (en.hl || []).forEach(function (h) { pv.flash(h.n - sec.first, h.rects.map(function (r) { return { l: r.l - 0.004, t: r.t - 0.003, r: r.r + 0.004, b: r.b + 0.003 }; }), true); });
       });
@@ -3685,6 +3699,8 @@ function tile(cls, o, onClick) {
         pv = PageView(host, { pages: pages, spread: true, cover: B.cover !== false, start: en.vs, entry: en, onState: function (s) { en.vs = s; },
           zones: function (i) { return zones[i + 1] || []; },
           label: function (i, row) { var a = row ? [].map.call(row.children, function (b) { return +b.dataset.i + 1; }) : [i + 1]; return a.join('–') + ' / ' + pages.length; } });
+        var bkToc = (B.toc || []).map(function (z) { return z.pg; });
+        tocFn = function () { show(false); if (bkToc.length) pv.jump(Math.min.apply(null, bkToc) - 1, 0); else pv.top(); };
         /* 검색 */
         var inp = document.createElement('input'); inp.type = 'search'; inp.placeholder = '교재에서 찾기 (띄어쓰기 무시)';
         var res = el('div', 'bkres'); panel.appendChild(inp); panel.appendChild(res);
