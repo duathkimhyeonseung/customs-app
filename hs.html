@@ -254,6 +254,7 @@ mark.hc6{--hc:rgba(102,222,205,.5);} mark.hc7{--hc:rgba(214,236,90,.6);}
 .pn button span{font-size:.78rem;color:var(--muted);}
 .pn button b{font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .pn .ph{visibility:hidden;}
+.pn.top{margin:.2rem 0 .9rem;}
 </style>
 
 <div class="app">
@@ -896,21 +897,21 @@ function renderChapter(no){
     notesBtn.setAttribute('aria-expanded', state.notes ? 'true' : 'false');
     panel.hidden = !state.notes;
   });
-  root.append(h('div', {class:'seg'}, notesBtn, termBtn));
-  if (has) panel.append(noteList({type:'ch', no:no}, c.notes, 'c' + no));
-  if (!has) panel.hidden = true;
-  root.append(panel);
-  root.append(tpanel);
-
-  var i = CH_ORDER.indexOf(no);
-  var prev = CH_ORDER[i - 1], next = CH_ORDER[i + 1];
+  /* 이전·다음 류: 류 제목과 주/호 버튼 사이 */
+  var ci = CH_ORDER.indexOf(no), prev = CH_ORDER[ci - 1], next = CH_ORDER[ci + 1];
   function pnBtn(n, cls){
     if (n == null) return h('div', {class:'ph'});
     var cc = CH.get(n);
     return h('button', {class:cls, type:'button', onclick:function(){ nav('c' + n); }},
       h('span', null, cls === 'prev' ? '‹ 이전' : '다음 ›'), h('b', null, '제' + n + '류 ' + cc.short));
   }
-  root.append(h('nav', {class:'pn', 'aria-label':'이전·다음 류'}, pnBtn(prev, 'prev'), pnBtn(next, 'next')));
+  root.append(h('nav', {class:'pn top', 'aria-label':'이전·다음 류'}, pnBtn(prev, 'prev'), pnBtn(next, 'next')));
+  root.append(h('div', {class:'seg'}, notesBtn, termBtn));
+  if (has) panel.append(noteList({type:'ch', no:no}, c.notes, 'c' + no));
+  if (!has) panel.hidden = true;
+  root.append(panel);
+  root.append(tpanel);
+
   return root;
 }
 
